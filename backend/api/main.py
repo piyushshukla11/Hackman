@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routers import auth, catalog, ingest
+from api.routers import actions, auth, catalog, ingest, ops, privacy, read, stream
 from prism_core.config.settings import get_settings
 
 
@@ -43,6 +43,11 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(catalog.router)
 app.include_router(ingest.router)
+app.include_router(read.router)
+app.include_router(actions.router)
+app.include_router(ops.router)
+app.include_router(privacy.router)
+app.include_router(stream.router)
 
 
 @app.get("/health", tags=["Ops"])

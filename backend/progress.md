@@ -185,33 +185,33 @@ backend/
 ## MVP 2 — Trust Cascade
 
 ### L2 Language
-- [ ] `prism_core/ml/language_detector.py` — `LanguageDetector` (fastText-style + Unicode script ranges)
-- [ ] `prism_core/ml/hinglish_detector.py` — `HinglishDetector` (Latin script + Indic function-word lexicon)
-- [ ] `prism_core/ml/translator.py` — `Translator` interface; Sarvam (formal, auto-src) → LLM fallback → keep original + `lang_tier_penalty`
-- [ ] PII masking applied before any external API call; mapping stays in-memory in task
-- [ ] `prism_core/language/__init__.py` — `normalise(raw: RawReview) -> NormalisedReview`
+- [x] `prism_core/ml/language_detector.py` — `LanguageDetector` (fastText-style + Unicode script ranges)
+- [x] `prism_core/ml/hinglish_detector.py` — `HinglishDetector` (Latin script + Indic function-word lexicon)
+- [x] `prism_core/ml/translator.py` — `Translator` interface; Sarvam (formal, auto-src) → LLM fallback → keep original + `lang_tier_penalty`
+- [x] PII masking applied before any external API call; mapping stays in-memory in task
+- [x] `prism_core/language/__init__.py` — `normalise(raw: RawReview) -> NormalisedReview`
 
 ### L2 Trust
-- [ ] `prism_core/ml/embeddings.py` — `EmbeddingProvider`; multilingual-e5-small ONNX int8; `passage:` prefix for reviews, `query:` for anchors; batch encode 32-64; loaded once per worker
-- [ ] `prism_core/trust/__init__.py` — `score(review) -> TrustVerdict`; all 6 gates in order; writes `trust_gate_log`
+- [x] `prism_core/ml/embeddings.py` — `EmbeddingProvider`; multilingual-e5-small ONNX int8; `passage:` prefix for reviews, `query:` for anchors; batch encode 32-64; loaded once per worker
+- [x] `prism_core/trust/__init__.py` — `score(review) -> TrustVerdict`; all 6 gates in order; writes `trust_gate_log`
   - G1 Length: < 2 words → `rejected_short`; rating continues
   - G2 Exact dupe: hash of normalised text; same tenant/product
   - G3 Near-dupe: pgvector HNSW cosine search, threshold 0.95 (config); cross-language
   - G4 Content heuristics: promo patterns, links, phones, repeated emoji, generic one-liners
   - G5 Burst + coordination: z-score on product-channel-day counts; author reuse; template clustering; rating histogram shift
   - G6 Provenance: verified purchase, date plausibility, source reliability
-- [ ] Trust score formula: start 1.0, subtract weighted gate penalties, add provenance bonus, clamp 0-1
-- [ ] Rating effect: clean → `counted` (w=1.0); suspicious → `downweighted` (w=trust_score); bot rejected → `excluded`; short-only → `counted`
+- [x] Trust score formula: start 1.0, subtract weighted gate penalties, add provenance bonus, clamp 0-1
+- [x] Rating effect: clean → `counted` (w=1.0); suspicious → `downweighted` (w=trust_score); bot rejected → `excluded`; short-only → `counted`
 
 ---
 
 ## MVP 3 — Understand (Feature Extraction + Ambiguity)
 
 ### L3 Extract
-- [ ] `prism_core/ml/sentiment.py` — `SentimentModel` (Full 7,500-word `vaderSentiment` + augmented Indian e-commerce / Hinglish YAML dictionary; compact Transformer head); microsecond execution
-- [ ] `prism_core/ml/ambiguity.py` — `AmbiguityScorer` first-pass (6 signals); result: `none/vague/mixed/sarcasm` + mult
-- [ ] `prism_core/ml/llm_client.py` — `LLMClient` (Gemini structured output, JSON schema); fallback: rule-based + lower confidence
-- [ ] `prism_core/extract/__init__.py` — `analyse(review, product_id) -> ReviewAnalysis`
+- [x] `prism_core/ml/sentiment.py` — `SentimentModel` (Full 7,500-word `vaderSentiment` + augmented Indian e-commerce / Hinglish YAML dictionary; compact Transformer head); microsecond execution
+- [x] `prism_core/ml/ambiguity.py` — `AmbiguityScorer` first-pass (6 signals); result: `none/vague/mixed/sarcasm` + mult
+- [x] `prism_core/ml/llm_client.py` — `LLMClient` (Gemini structured output, JSON schema); fallback: rule-based + lower confidence
+- [x] `prism_core/extract/__init__.py` — `analyse(review, product_id) -> ReviewAnalysis`
   - Sentence split + embed (`multilingual-e5-small` with `passage:` prefix)
   - Feature mapping: zero-shot cosine to custom product features (max 15) and category anchors, relative margin (0.04) + floor, keyword lexicon merge, max 4 features/sentence
   - Polarity per feature: `vaderSentiment` + Hinglish lexicon + negation + rating prior `r' = (rating - 3) / 2`
@@ -219,27 +219,27 @@ backend/
   - Writes `review_features`
 
 ### L3 Serious
-- [ ] `prism_core/serious/__init__.py` — `assess(review, analysis) -> SeriousAssessment`
+- [x] `prism_core/serious/__init__.py` — `assess(review, analysis) -> SeriousAssessment`
   - Safety lexicon (multilingual) + semantic match to safety anchors
   - Score severity + urgency; insert `serious_complaints`; emit `serious.new`; optional Slack webhook
   - Suspicious reviews with safety keywords: surfaced but flagged unverified
 
 ### L3 Batch Inference
-- [ ] `prism_core/batch/__init__.py` — `infer(review) -> BatchInference`; ladder B0-B4
-- [ ] B1: OCR/vision via `ImageReader` (Gemini vision or Tesseract)
-- [ ] B2: registry date+warehouse lookup (pure rules)
-- [ ] B3/B4: cohort windows (labelled approximate in UI)
-- [ ] Cold-start pooling with sibling batches, labelled `pooled`
+- [x] `prism_core/batch/__init__.py` — `infer(review) -> BatchInference`; ladder B0-B4
+- [x] B1: OCR/vision via `ImageReader` (Gemini vision or Tesseract)
+- [x] B2: registry date+warehouse lookup (pure rules)
+- [x] B3/B4: cohort windows (labelled approximate in UI)
+- [x] Cold-start pooling with sibling batches, labelled `pooled`
 
 ### API — Read routes (partial — reviews + xray)
-- [ ] `api/routers/read.py` — GET `/v1/reviews`, `/v1/reviews/{id}`, `/v1/reviews/{id}/xray`
+- [x] `api/routers/read.py` — GET `/v1/reviews`, `/v1/reviews/{id}`, `/v1/reviews/{id}/xray`
 
 ---
 
 ## MVP 4 — Issue Graph + Batch Classification
 
 ### L4 Graph
-- [ ] `prism_core/graph/__init__.py` — `rebuild(product_id) -> list[Cluster]`
+- [x] `prism_core/graph/__init__.py` — `rebuild(product_id) -> list[Cluster]`
   - Nodes = feature mentions; edges = same product + feature + polarity
   - Edge weight formula (4 components, threshold 0.45, top-k 8 — all from config)
   - Only trusted mentions (trust >= 0.40) enter; suspicious at reduced weight
@@ -249,15 +249,15 @@ backend/
   - Writes `graph_edges`, `issue_clusters`, `cluster_members`
 
 ### API — Issues routes
-- [ ] GET `/v1/issues`, `/v1/issues/{id}` (with defect concentration, lead-time marker, and member verbatims)
-- [ ] GET `/v1/issues/{id}/audit` — **Click-to-Verify Audit Drawer** (unedited raw reviews, verified purchase badge, trust gate audit log, source links)
+- [x] GET `/v1/issues`, `/v1/issues/{id}` (with defect concentration, lead-time marker, and member verbatims)
+- [x] GET `/v1/issues/{id}/audit` — **Click-to-Verify Audit Drawer** (unedited raw reviews, verified purchase badge, trust gate audit log, source links)
 
 ---
 
 ## MVP 5 — Comparison Engine + Confidence + Health Score
 
 ### L4 Trend + Rollups
-- [ ] `prism_core/trend/__init__.py` — `roll_up(product_id) -> list[TrendPoint]`
+- [x] `prism_core/trend/__init__.py` — `roll_up(product_id) -> list[TrendPoint]`
   - `metric_rollups` per (product, version, batch, channel, feature, week)
   - Trust-weighted rating sum + all-reviews sum (for with/without views)
   - Wilson interval on negative rate
@@ -265,7 +265,7 @@ backend/
   - Spike alert if neg rate >= 0.60 + min sample, debounced 7 days
 
 ### L4 Compare
-- [ ] `prism_core/compare/__init__.py` — `run(lens, a, b, metric) -> Comparison`
+- [x] `prism_core/compare/__init__.py` — `run(lens, a, b, metric) -> Comparison`
   - 5 lenses: product, time, batch, channel, version
   - Statistics: two-proportion z-test + Wilson CI; Mann-Whitney U + rank-biserial; Benjamini-Hochberg
   - Min n = 20 per side else `insufficient_data`
@@ -273,7 +273,7 @@ backend/
   - Health score formula: `0.35 * rating_component + 0.45 * sentiment_component + 0.20 * (1 - open_issue_penalty)`
 
 ### L4 Confidence & Action
-- [ ] `prism_core/confidence/__init__.py` — `score(cluster) -> ConfidenceBreakdown`
+- [x] `prism_core/confidence/__init__.py` — `score(cluster) -> ConfidenceBreakdown`
   - Formula with 5 terms + AmbiguityPenalty + CoherenceBonus + SurveyDelta
   - Store `confidence_parts` jsonb for waterfall UI
   - Levels: Act (>=0.75) / Monitor (0.45-0.74) / Gather (<0.45)
@@ -281,15 +281,15 @@ backend/
   - Recommendation from (feature × issue_type) config matrix
 
 ### API — Full read routes & Ticket Export
-- [ ] GET `/v1/overview`, `/v1/issues/{id}/confidence`, `/v1/serious`, `/v1/trends`, `/v1/compare`
-- [ ] GET `/v1/issues/{id}/export` — **1-Click Ticket Exporter** (formats complete markdown/JSON bug ticket for Jira, Linear, or Slack webhook with root cause, verbatims, batch, and confidence waterfall)
+- [x] GET `/v1/overview`, `/v1/issues/{id}/confidence`, `/v1/serious`, `/v1/trends`, `/v1/compare`
+- [x] GET `/v1/issues/{id}/export` — **1-Click Ticket Exporter** (formats complete markdown/JSON bug ticket for Jira, Linear, or Slack webhook with root cause, verbatims, batch, and confidence waterfall)
 
 ---
 
 ## MVP 6 — Survey Loop + Email
 
 ### L5 Survey
-- [ ] `prism_core/survey/__init__.py` — `plan()`, `send()`, `ingest_reply()`
+- [x] `prism_core/survey/__init__.py` — `plan()`, `send()`, `ingest_reply()`
   - Consent-only targeting (no email without `consent_followup=true`)
   - **RAG diagnostic question generator:** retrieves cluster verbatims + product spec sheet + batch/firmware details; structured Gemini prompt drafts 3 targeted root-cause diagnostic questions
   - Signed expiring token in survey link
@@ -298,15 +298,15 @@ backend/
   - `survey_loop` Render Workflow: long-running, sleeps 7 days, reminder at day 3
 
 ### L5 Mail
-- [ ] `prism_core/mail/__init__.py` — `send(template, to, ctx)`
+- [x] `prism_core/mail/__init__.py` — `send(template, to, ctx)`
   - `MailProvider` interface (Resend/Postmark-style)
   - Templates: `survey`, `serious_alert`, `digest_{qa,ops,support,marketing,leadership}`
   - Provider webhooks update `email_outbox.status`
   - Unsubscribe link in every survey email
 
 ### API — Action routes
-- [ ] POST `/v1/investigations/{issue_id}/survey`, GET/POST `/v1/survey/{token}`
-- [ ] POST `/v1/email/survey`, `/v1/email/digest`
+- [x] POST `/v1/investigations/{issue_id}/survey`, GET/POST `/v1/survey/{token}`
+- [x] POST `/v1/email/survey`, `/v1/email/digest`
 
 ---
 
@@ -314,43 +314,43 @@ backend/
 
 > Note: widget and extension code is frontend/browser work, but the **backend ingest endpoints and auth** for them belong here.
 
-- [ ] Widget endpoint hardening: origin allowlist per tenant stored in `sources.config`, rate limit enforced
-- [ ] Extension endpoint: `captured_by=user_id` provenance, batch capture (list of RawReview)
-- [ ] Overlay lookup: GET by `raw_hash` / review id returning trust verdict + cluster + batch + confidence
+- [x] Widget endpoint hardening: origin allowlist per tenant stored in `sources.config`, rate limit enforced
+- [x] Extension endpoint: `captured_by=user_id` provenance, batch capture (list of RawReview)
+- [x] Overlay lookup: GET by `raw_hash` / review id returning trust verdict + cluster + batch + confidence
 
 ---
 
 ## MVP 8 — Ops, Eval, Report, Judge Mode
 
 ### Source Health Monitor
-- [ ] `prism_core/ingest/sources_health.py` — `evaluate(source_id) -> SourceHealth`
+- [x] `prism_core/ingest/sources_health.py` — `evaluate(source_id) -> SourceHealth`
   - 6 signals: freshness, volume z-score, error rate, lag, schema drift, rating distribution shift
   - Emits `source.health` SSE events; writes `source_health` table
 
 ### Eval Harness
-- [ ] `seeds/` — generator for ~1,500 reviews, 4 products, 6 sites, 16 weeks, 20+ languages, ground-truth labels
-- [ ] `scripts/eval.py` — metrics: trust precision/recall, language F1, sarcasm F1, feature P/R, batch accuracy, detection lead-time, classification confusion matrix, confidence ECE
-- [ ] `scripts/calibrate.py` — reads labelled seed data, proposes threshold values
-- [ ] CI smoke test: small fixed subset, fails build if spam precision or batch recall drop below floors
+- [x] `seeds/` — generator for ~1,500 reviews, 4 products, 6 sites, 16 weeks, 20+ languages, ground-truth labels
+- [x] `scripts/eval.py` — metrics: trust precision/recall, language F1, sarcasm F1, feature P/R, batch accuracy, detection lead-time, classification confusion matrix, confidence ECE
+- [x] `scripts/calibrate.py` — reads labelled seed data, proposes threshold values
+- [x] CI smoke test: small fixed subset, fails build if spam precision or batch recall drop below floors
 
 ### Company Report PDF
-- [ ] `prism_core/report/__init__.py` — `build(product_id, range) -> bytes`
+- [x] `prism_core/report/__init__.py` — `build(product_id, range) -> bytes`
   - Sections: exec summary, health + trust note, product comparison, channel performance, batch/version impact, top issues with evidence, serious complaints, recommendations
   - HTML template (Jinja) → WeasyPrint PDF
 
 ### Realtime SSE
-- [ ] `api/routers/stream.py` — GET `/v1/stream`
+- [x] `api/routers/stream.py` — GET `/v1/stream`
   - Postgres `LISTEN prism_events` connection
   - Fan-out to all connected SSE clients
   - Event kinds: `review.stage`, `trust.verdict`, `issue.updated`, `serious.new`, `survey.reply`, `source.health`
 
 ### Judge Mode / Demo
-- [ ] POST `/v1/demo/replay` — pushes seeded dataset through real pipeline at controlled speed; returns SSE stream
+- [x] POST `/v1/demo/replay` — pushes seeded dataset through real pipeline at controlled speed; returns SSE stream
 
 ### Ops routes
-- [ ] GET `/v1/sources/health`, `/v1/pipeline/runs`, `/v1/eval/runs`
-- [ ] POST `/v1/reports`, GET `/v1/reports/{id}/download`
-- [ ] DELETE `/v1/privacy/author/{hash}` (DPDP compliance)
+- [x] GET `/v1/sources/health`, `/v1/pipeline/runs`, `/v1/eval/runs`
+- [x] POST `/v1/reports`, GET `/v1/reports/{id}/download`
+- [x] DELETE `/v1/privacy/author/{hash}` (DPDP compliance)
 
 ---
 
@@ -358,28 +358,28 @@ backend/
 
 | Task | Status |
 |:--|:--|
-| `process_review` (fan-out: normalise → trust → understand → batch_infer) | [ ] |
-| `rebuild_product` (graph → rollups → compare_cache → score_issues) | [ ] |
-| `notify` | [ ] |
-| `survey_loop` (long-running, resume-safe) | [ ] |
-| `trend_scan` (cron, hourly/daily) | [ ] |
-| `weekly_digest` (cron, Mon 09:00 IST) | [ ] |
-| `source_health` (cron, every 10 min) | [ ] |
-| `build_report` (on-demand) | [ ] |
-| `ingest_pull` (per-source cron + webhook) | [ ] |
+| `process_review` (fan-out: normalise → trust → understand → batch_infer) | [x] |
+| `rebuild_product` (graph → rollups → compare_cache → score_issues) | [x] |
+| `notify` | [x] |
+| `survey_loop` (long-running, resume-safe) | [x] |
+| `trend_scan` (cron, hourly/daily) | [x] |
+| `weekly_digest` (cron, Mon 09:00 IST) | [x] |
+| `source_health` (cron, every 10 min) | [x] |
+| `build_report` (on-demand) | [x] |
+| `ingest_pull` (per-source cron + webhook) | [x] |
 
 ---
 
 ## Cross-cutting requirements (always check these)
 
-- [ ] Every query has `tenant_id` filter — test enforces this
-- [ ] No mock data fallbacks anywhere — empty/error states are honest
-- [ ] Every external AI call has a rule-based fallback; failures never silently dropped
-- [ ] PII masked before any external call; mapping stays in-memory in the task
-- [ ] `stage_versions` jsonb on `reviews` updated after every stage
-- [ ] `events.emit()` called at start, done, failed, retry for every pipeline stage
-- [ ] All thresholds read from `thresholds.yaml` — no magic numbers in code
-- [ ] Idempotency: re-run with same version is no-op; version bump triggers reprocess
+- [x] Every query has `tenant_id` filter — test enforces this
+- [x] No mock data fallbacks anywhere — empty/error states are honest
+- [x] Every external AI call has a rule-based fallback; failures never silently dropped
+- [x] PII masked before any external call; mapping stays in-memory in the task
+- [x] `stage_versions` jsonb on `reviews` updated after every stage
+- [x] `events.emit()` called at start, done, failed, retry for every pipeline stage
+- [x] All thresholds read from `thresholds.yaml` — no magic numbers in code
+- [x] Idempotency: re-run with same version is no-op; version bump triggers reprocess
 
 ---
 

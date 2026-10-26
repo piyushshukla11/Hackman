@@ -2,43 +2,84 @@
 prism_core/db
 
 Public exports for PRISM database models and engine helpers.
+Delegates to top-level `db` package with local fallback.
 """
-from prism_core.db.base import (
-    Base,
-    TenantMixin,
-    get_db_session,
-    get_engine,
-    get_sessionmaker,
-)
-from prism_core.db.models import (
-    Alert,
-    APIKey,
-    Batch,
-    ClusterMember,
-    EmailOutbox,
-    EvalRun,
-    FeatureTaxonomy,
-    GraphEdge,
-    IssueCluster,
-    MetricRollup,
-    Modification,
-    PipelineEvent,
-    Product,
-    ProductVersion,
-    RawReview,
-    Report,
-    ReturnsSeries,
-    Review,
-    ReviewFeature,
-    SeriousComplaint,
-    Source,
-    SourceHealth,
-    Survey,
-    SurveyResponse,
-    TrendPoint,
-    TrustGateLog,
-    User,
-)
+from __future__ import annotations
+
+try:
+    from db.base import (
+        Base,
+        TenantMixin,
+        get_db_session,
+        get_engine,
+        get_sessionmaker,
+    )
+    from db.models import (
+        Alert,
+        APIKey,
+        Batch,
+        ClusterMember,
+        EmailOutbox,
+        EvalRun,
+        FeatureTaxonomy,
+        GraphEdge,
+        IssueCluster,
+        MetricRollup,
+        Modification,
+        PipelineEvent,
+        Product,
+        ProductVersion,
+        RawReview,
+        Report,
+        ReturnsSeries,
+        Review,
+        ReviewFeature,
+        SeriousComplaint,
+        Source,
+        SourceHealth,
+        Survey,
+        SurveyResponse,
+        TrendPoint,
+        TrustGateLog,
+        User,
+    )
+except ImportError:
+    from prism_core.db.base import (  # type: ignore
+        Base,
+        TenantMixin,
+        get_db_session,
+        get_engine,
+        get_sessionmaker,
+    )
+    from prism_core.db.models import (  # type: ignore
+        Alert,
+        APIKey,
+        Batch,
+        ClusterMember,
+        EmailOutbox,
+        EvalRun,
+        FeatureTaxonomy,
+        GraphEdge,
+        IssueCluster,
+        MetricRollup,
+        Modification,
+        PipelineEvent,
+        Product,
+        ProductVersion,
+        RawReview,
+        Report,
+        ReturnsSeries,
+        Review,
+        ReviewFeature,
+        SeriousComplaint,
+        Source,
+        SourceHealth,
+        Survey,
+        SurveyResponse,
+        TrendPoint,
+        TrustGateLog,
+        User,
+    )
 
 __all__ = [
     "Base",
