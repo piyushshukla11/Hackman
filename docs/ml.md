@@ -10,13 +10,13 @@ Principle: local, cheap, deterministic models do routine work. LLMs are used onl
 | Language/script ID | fastText-style language ID plus Unicode script ranges | `LanguageDetector` | `langdetect`-style library |
 | Romanised Indic / Hinglish detection | Lexicon hit rate of Indic function words in Latin script | `HinglishDetector` | LLM check on uncertain text |
 | Translation to English | Sarvam translate (formal mode, auto source) | `Translator` | LLM translation, then keep original with penalty |
-| Sentiment polarity (English-normalised sentence) | Compact English sentiment classifier (RoBERTa/DistilBERT family) | `SentimentModel.score(sentence)` | Lexicon + negation scorer |
+| Sentiment polarity (English-normalised sentence) | Full 7,500-word `vaderSentiment` analyzer augmented with Indian e-commerce & Hinglish dictionary (`sentiment_lexicon.yaml`) + negation rules + rating prior `(rating - 3) / 2`; optional compact Transformer head | `SentimentModel.score(sentence)` | Lexicon + negation scorer |
 | Sarcasm/ambiguity first pass | Rule and feature scorer (see section 4) | `AmbiguityScorer` | n/a |
 | Ambiguity second pass, survey drafting and summary, recommendation wording | Gemini (structured JSON output) | `LLMClient` | Rule-based result with lower confidence; category fallback questions |
 | Label/serial text and damage from images | Gemini vision (or Tesseract for plain label OCR) | `ImageReader` | Skip, batch ladder drops to B2 |
 | Statistics | scipy / statsmodels | n/a | n/a |
 
-Note on e5: it needs `query:` / `passage:` prefixes; we use `passage:` for reviews and `query:` for anchors. Cosine similarities from e5 are compressed (typically high). Hence all similarity thresholds are **calibrated**, never copied from the old MiniLM values.
+Note on e5: `intfloat/multilingual-e5-small` covers 100+ languages natively. It needs `query:` / `passage:` prefixes; we wrap this in `EmbeddingProvider` so reviews use `passage:` and anchors/custom features use `query:`. Cosine similarities from e5 are compressed (typically high, 0.70-0.92). Hence all similarity thresholds are **calibrated**, never copied from the old MiniLM values. Model weights are baked into Docker for instant startup.
 
 ## 2. Embedding use
 
@@ -29,10 +29,12 @@ Note on e5: it needs `query:` / `passage:` prefixes; we use `passage:` for revie
 | Caching | embeddings stored in `reviews.embedding`; anchors embedded once per taxonomy version |
 | Batching | encode in batches (32 to 64) inside the worker; models loaded once per worker process |
 
-## 3. Feature taxonomy
+## 3. Feature taxonomy & Company Custom Features
 
-- Stored in `feature_taxonomies` per product category: feature name, anchor phrases (multiple per feature, several languages for the main ones), keyword lists per language group.
-- Seed taxonomies: headphones, refrigerator, controller, monitor, plus a generic one (packaging, delivery, customer support, value for money, build quality).
+- **Company Custom Features (Max 15 per product):** Companies/tenants can define up to 15 custom features per product (e.g. "ear cushion comfort", "fizz", "strap durability"). Any word or phrase can be input.
+  - Zero-shot matching: PRISM embeds each custom feature phrase using `multilingual-e5-small` (`query: <phrase>`) and caches it in `feature_taxonomies`.
+  - Auto-anchor generation: Generates 2-3 synonym/anchor variations so matching accuracy is maximized without model re-training.
+- **Category Seed Taxonomies:** Stored in `feature_taxonomies` per category: headphones, refrigerator, controller, monitor, plus a generic one (packaging, delivery, customer support, value for money, build quality).
 - Anchors are phrases, not single words, and each feature has 3 to 6 anchors; similarity to a feature is the max over its anchors.
 - **Stretch (not in core MVPs):** emerging feature discovery by clustering unmatched sentences and proposing new feature names for an admin to approve.
 
@@ -164,3 +166,27 @@ Rating-only reviews skip this step.
 - Mask PII before any external call (Sarvam, Gemini); mapping stays in memory in the task.
 - Send the minimum text needed (the feature sentence plus context, not entire histories).
 - Log LLM calls (purpose, tokens, latency, fallback used) without storing unmasked text.
+
+## 12. Smart, Cost-Efficient Multimodal Processing (Images & Videos)
+
+Principle: Avoid passing raw heavy video/image streams directly into multimodal LLMs. Extract lightweight cues first.
+
+- **Audio Track First (Videos):** `ffmpeg` strips the audio track to 16kHz mono. Sarvam/Whisper STT converts spoken complaints to text in seconds. Captures >80% of video review signal at 90% lower compute cost.
+- **Keyframe Extraction (Videos):** `ffmpeg` extracts up to 3 candidate frames using scene-change detection (`gt(scene,0.4)`) or equidistant timestamps (25%, 50%, 75%).
+- **Image Pre-processing:** Scaled to 768px max dimension before ingestion.
+- **Selective Vision Gating:** Candidate frames/images are only forwarded to Gemini Vision if:
+  1. The customer review/audio contains visual failure keywords (`"cracked"`, `"smoke"`, `"burnt"`, `"shattered"`, `"bent"`, `"leak"`).
+  2. Or serial/barcode OCR is required for batch inference ladder (B1).
+  Otherwise, Vision LLM is skipped ($0 extra cost).
+
+## 13. RAG-Based Diagnostic Survey Generation
+
+Instead of naive ungrounded prompts, PRISM uses a compact RAG pipeline to generate diagnostic multiple-choice survey questions:
+1. **Retrieval:**
+   - Top 4 representative verbatim customer complaints from the identified issue cluster.
+   - Product technical specifications from `products.specs` in the catalog (e.g. battery chemistry, operating temp, torque specs).
+   - Dominant batch code and firmware release.
+2. **Augmentation & Generation:**
+   - Injects the retrieved context into Gemini structured JSON prompt.
+   - Generates 3 hyper-targeted multiple-choice diagnostic questions to isolate engineering failure modes (e.g. isolating firmware freeze vs hardware cell degradation).
+3. **Deterministic Fallback:** Category-level pre-calibrated diagnostic templates if LLM is unavailable or low-confidence.

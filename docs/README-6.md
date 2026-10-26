@@ -53,7 +53,7 @@ Every layer is a Python module with a typed input and output (see `architecture.
 | API | Python 3.12, FastAPI, Pydantic v2 |
 | Durable pipeline | Render Workflows (Python tasks) |
 | DB | Render Postgres + pgvector, SQLAlchemy 2, Alembic |
-| ML | sentence-transformers (multilingual-e5-small, 384-d), Sarvam translate, Gemini (structured output) for ambiguous cases, surveys, label OCR |
+| ML | `intfloat/multilingual-e5-small` (384-d, ONNX int8), full 7,500-word `vaderSentiment` + Hinglish lexicon, Sarvam translate, RAG-grounded Gemini for diagnostic surveys & ambiguity second-pass, label OCR |
 | Dashboard | React + Vite + TypeScript + Tailwind + shadcn/ui |
 | Widget | Vanilla TypeScript, one small bundle |
 | Extension | Chrome MV3, TypeScript |

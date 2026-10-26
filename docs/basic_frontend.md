@@ -22,21 +22,29 @@
 
 | Route | Purpose | Main components |
 | :-- | :-- | :-- |
-| `/overview` | Portfolio health, top issues, serious queue count, source health strip | Health cards (trust-aware), Top issues, Alerts |
+| `/onboarding` | First-login role setup & module selection | Role title input (e.g. "Senior QA Lead"), module view checkboxes, persona preset chips |
+| `/overview` | Portfolio health, top issues, serious queue count, source health strip | Health cards (trust-aware), Top issues, **Defect Concentration badge**, Alerts |
 | `/stream` | **Prism Stream** (live pipeline view) | Stream canvas, stage lane, event log |
-| `/issues` and `/issues/:id` | Issue cards and detail with evidence | Issue card, **Confidence waterfall**, Evidence list, Batch/channel/language chips |
+| `/issues` and `/issues/:id` | Issue cards and detail with evidence | Issue card, **Defect Concentration ($p < 0.001$)**, **Lead-Time Advantage marker**, **Click-to-Verify Audit Drawer**, **1-Click Ticket Exporter (Jira/Linear/Slack)**, **Confidence waterfall**, Evidence list, Batch/channel/language chips |
 | `/reviews/:id` | **Review X-ray** | Highlight view, trust gates, translation diff, anchor similarities |
 | `/timeline` | **Forensic lead-time timeline** | Channel lanes, batch capsules, rating line, detection marker, returns series |
 | `/compare` | Comparison lenses | Lens switcher (product, time, batch, channel, version), result panel with CI and verdict |
-| `/products/:id` | Product page: versions, modifications, batches, performance per site | Version timeline, Site performance matrix |
+| `/products/:id` | Product page: versions, modifications, batches, performance per site | Version timeline, Site performance matrix, **Custom Features Builder (max 15)** |
 | `/serious` | Serious-complaint queue | Queue list, severity/urgency, status |
 | `/investigations` | Closed loop surveys | **Survey thread** with confidence mover |
 | `/sources` | Source health and ingestion | Health table, last sync, volume sparkline, upload and mapping |
 | `/reports` | Company report PDF | Generate, list, download |
-| `/settings` | Products, versions, batches, taxonomies, API keys, widget snippet, users | Forms |
+| `/settings` | Products, versions, batches, taxonomies, **Company Custom Features (max 15)**, API keys, widget snippet, users | Forms |
 | `/judge` | Judge mode (guided 90s path) | Overlay stepper |
 
-Navigation: left rail, grouped by layer vocabulary (Ingest, Clean, Understand, Diagnose, Act) so the product explains itself.
+**Navigation & Personalization:**
+- **First-Login Onboarding:** A new user types their title and selects their desired modules. Navigation selectively displays only their chosen views so the interface never feels crowded.
+- **Top Bar Persona Quick-Switcher:** Judges and users can switch on-the-fly between curated personas:
+  - *QA & Reliability Lead:* Prioritizes Issues, Forensic Timeline, Batch Ladder, Returns Series.
+  - *Customer Experience Lead:* Prioritizes Prism Stream, Serious Complaints, Survey Loop, Customer Verbatims.
+  - *Product Manager:* Prioritizes Custom Feature Trends, Comparison Lenses, Graph.
+  - *Executive:* Prioritizes Portfolio Health, Financial Exposure, Health Index.
+- Grouped by layer vocabulary (Ingest, Clean, Understand, Diagnose, Act) so the product explains itself.
 
 ## 4. Signature visuals (with required data)
 
