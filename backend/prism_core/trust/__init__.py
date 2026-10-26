@@ -25,24 +25,56 @@ PHONE_REGEX = re.compile(r"(\+?91[\-\s]?)?[6-9]\d{9}\b|\b\d{3}[-.\s]??\d{3}[-.\s
 PROMO_KEYWORDS = {"use code", "coupon code", "discount code", "flat off", "telegram link", "whatsapp group"}
 
 
+import hashlib
+
+
 def count_words(text: str) -> int:
     return len(re.findall(r"\b\w+\b", text))
 
 
 def score(
-    review: NormalisedReview,
+    review: Any = None,
+    raw_or_norm: Any = None,
     raw: RawReview | None = None,
     is_exact_dupe: bool = False,
     near_dupe_max_sim: float = 0.0,
     burst_detected: bool = False,
+    existing_hashes: Any = None,
+    **kwargs: Any,
 ) -> TrustVerdict:
     """
     Public entrypoint for L2 Trust Cascade.
     Evaluates gates G1 to G6 and returns TrustVerdict.
+    Supports both score(norm, raw) and score(raw, norm) conventions.
     """
+    actual_norm: Any = None
+    actual_raw: Any = None
+
+    if hasattr(review, "text_original"):
+        actual_norm = review
+        actual_raw = raw if raw is not None else raw_or_norm
+    elif review is not None and hasattr(review, "text") and raw_or_norm is not None and hasattr(raw_or_norm, "text_original"):
+        actual_raw = review
+        actual_norm = raw_or_norm
+    else:
+        actual_norm = review
+        actual_raw = raw if raw is not None else raw_or_norm
+
+    text = ""
+    if actual_norm is not None:
+        text = getattr(actual_norm, "text_original", None) or getattr(actual_norm, "text_en", None) or ""
+    elif actual_raw is not None:
+        text = getattr(actual_raw, "text", None) or ""
+    text = (text or "").strip()
+
+    if existing_hashes:
+        norm_h = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        lower_h = hashlib.sha256(text.lower().encode("utf-8")).hexdigest()
+        if norm_h in existing_hashes or lower_h in existing_hashes:
+            is_exact_dupe = True
+
     gates: list[GateResult] = []
     current_score = 1.0
-    text = (review.text_original or "").strip()
     words = count_words(text)
 
     # ── G1: Length Gate ──────────────────────────────────────────────────────────
@@ -117,7 +149,8 @@ def score(
     has_url = bool(URL_REGEX.search(text))
     has_phone = bool(PHONE_REGEX.search(text))
     has_promo = any(kw in text.lower() for kw in PROMO_KEYWORDS)
-    repeated_emojis = len(review.emojis) >= 5
+    norm_emojis = getattr(actual_norm, "emojis", None) or []
+    repeated_emojis = len(norm_emojis) >= 5
 
     if has_url or has_promo or has_phone:
         delta = -0.80
@@ -137,7 +170,7 @@ def score(
             verdict="warn",
             reason_code="REPEATED_EMOJIS",
             score_delta=delta,
-            detail={"emoji_count": len(review.emojis)},
+            detail={"emoji_count": len(norm_emojis)},
         ))
     else:
         gates.append(GateResult(gate="G4", verdict="pass", reason_code="CLEAN_CONTENT", score_delta=0.0))
@@ -158,8 +191,23 @@ def score(
 
     # ── G6: Provenance & Verification Gate ───────────────────────────────────────
     is_verified = False
-    if raw and (raw.author.verified_buyer or (raw.order and raw.order.order_id)):
-        is_verified = True
+    if actual_raw:
+        author = getattr(actual_raw, "author", None)
+        verified_buyer = False
+        if author is not None:
+            if isinstance(author, dict):
+                verified_buyer = bool(author.get("verified_buyer"))
+            else:
+                verified_buyer = bool(getattr(author, "verified_buyer", False))
+        order = getattr(actual_raw, "order", None)
+        order_id = False
+        if order is not None:
+            if isinstance(order, dict):
+                order_id = bool(order.get("order_id"))
+            else:
+                order_id = bool(getattr(order, "order_id", False))
+        if verified_buyer or order_id:
+            is_verified = True
 
     if is_verified:
         bonus = 0.15
@@ -216,3 +264,6 @@ def score(
         rating_status=rating_status,
         gates=gates,
     )
+
+
+score_trust = score

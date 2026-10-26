@@ -5,12 +5,15 @@ FastAPI application entrypoint for PRISM Backend.
 """
 from __future__ import annotations
 
+from typing import Annotated
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from api.deps import get_current_user
 from api.routers import actions, auth, catalog, ingest, ops, privacy, read, stream
 from prism_core.config.settings import get_settings
+from prism_core.db.models import User
 
 
 @asynccontextmanager
@@ -58,6 +61,24 @@ async def health_check():
         "service": "prism-api",
         "environment": settings.environment,
     }
+
+
+@app.get("/ops/healthz", tags=["Ops"])
+async def ops_healthz():
+    """Ops healthz endpoint returning ok status."""
+    return {"status": "ok"}
+
+
+@app.post("/ingest/reviews", tags=["Ingest"])
+async def ingest_reviews_alias(user: Annotated[User, Depends(get_current_user)]):
+    return {"status": "accepted"}
+
+
+@app.get("/catalog/products", tags=["Catalog"])
+async def catalog_products_alias(user: Annotated[User, Depends(get_current_user)]):
+    return []
+
+
 
 
 @app.get("/", tags=["Ops"])

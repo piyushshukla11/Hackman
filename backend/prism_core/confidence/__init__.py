@@ -23,11 +23,15 @@ def score(
     ambiguity_penalty: float = 1.00,
     coherence_bonus: float = 0.05,
     survey_delta: float = 0.00,
+    user_trust_avg: float | None = None,
+    **kwargs: Any,
 ) -> ConfidenceBreakdown:
     """
     Computes confidence breakdown for an issue cluster.
     Provides complete waterfall decomposition for UI.
     """
+    if user_trust_avg is not None:
+        verified_buyer_ratio = user_trust_avg
     # 1. Frequency (F): saturates at 10 mentions
     F = min(1.0, cluster.size / 10.0)
 

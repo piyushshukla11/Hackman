@@ -115,3 +115,22 @@ async def send(
             res_id = await _dispatch(sess)
             await sess.commit()
             return res_id
+
+
+def render_survey_invitation(
+    customer_name: str,
+    product_name: str,
+    feature: str = "",
+    survey_url: str = "",
+    unsubscribe_url: str = "https://prism.app/unsubscribe",
+) -> str:
+    """Renders the HTML survey invitation email template."""
+    template = Template(SURVEY_EMAIL_TEMPLATE)
+    return template.render(
+        customer_name=customer_name,
+        product_name=product_name,
+        feature_name=feature,
+        survey_url=survey_url,
+        unsubscribe_url=unsubscribe_url,
+    )
+

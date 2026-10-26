@@ -174,3 +174,43 @@ async def ingest_reply(
             out = await _ingest(sess)
             await sess.commit()
             return out
+
+
+def generate_survey_token(survey_id: str, tenant_id: str, secret: str) -> str:
+    """Generates an HMAC-signed base64 token for survey authentication."""
+    import base64
+    import hmac
+
+    payload = f"{survey_id}:{tenant_id}"
+    sig = hmac.new(secret.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256).hexdigest()
+    raw = f"{payload}:{sig}"
+    return base64.urlsafe_b64encode(raw.encode("utf-8")).decode("utf-8")
+
+
+def verify_survey_token(token: str, secret: str) -> tuple[bool, str | None, str | None]:
+    """Verifies HMAC token integrity and returns (verified, survey_id, tenant_id)."""
+    import base64
+    import hmac
+
+    try:
+        raw = base64.urlsafe_b64decode(token.encode("utf-8")).decode("utf-8")
+        parts = raw.split(":")
+        if len(parts) != 3:
+            return False, None, None
+        survey_id, tenant_id, sig = parts
+        expected_sig = hmac.new(
+            secret.encode("utf-8"), f"{survey_id}:{tenant_id}".encode("utf-8"), hashlib.sha256
+        ).hexdigest()
+        if hmac.compare_digest(sig, expected_sig):
+            return True, survey_id, tenant_id
+        return False, None, None
+    except Exception:
+        return False, None, None
+
+
+class SurveyManager:
+    """Manager for RAG-grounded customer diagnostic surveys."""
+
+    def __init__(self, settings=None):
+        self.settings = settings
+

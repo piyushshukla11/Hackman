@@ -30,5 +30,17 @@ async def main():
         logger.info("PRISM Workflows Worker shutting down gracefully.")
 
 
+class WorkflowRunner:
+    """Task dispatcher for background workflow jobs."""
+
+    def __init__(self, tenant_id: str = "default"):
+        self.tenant_id = tenant_id
+
+    def run_sync(self, task_func, *args, **kwargs):
+        """Runs a synchronous or callable task with arguments."""
+        return task_func(*args, **kwargs)
+
+
 if __name__ == "__main__":
     asyncio.run(main())
+

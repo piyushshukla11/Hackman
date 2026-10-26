@@ -51,12 +51,19 @@ async def normalise(raw: RawReview) -> NormalisedReview:
     emojis = extract_emojis(text)
 
     # 1. Script & Base Language Detection
-    lang_code, script, tier = _lang_detector.detect(text)
+    detection = _lang_detector.detect(text)
+    lang_code = detection.lang
+    script = detection.script
+    tier = detection.tier
+    candidate_langs = detection.candidate_langs
+    req_review = detection.request_review
 
     # 2. Check for Hinglish in Latin script
     if script == "Latin" and _hinglish_detector.is_hinglish(text):
         lang_code = "hi-Latn"
         tier = 1
+        candidate_langs = ["hi-Latn"]
+        req_review = False
 
     # 3. Translation to English
     text_en, tier_penalty = await _translator.translate_to_en(text, lang_code)
@@ -68,5 +75,8 @@ async def normalise(raw: RawReview) -> NormalisedReview:
         text_en=text_en,
         emojis=emojis,
         lang_tier=tier,
-        lang_tier_penalty=tier_penalty,
+        lang_tier_penalty=tier_penalty or req_review,
+        candidate_langs=candidate_langs,
+        request_review=req_review,
     )
+

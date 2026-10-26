@@ -59,15 +59,82 @@ class GraphNode:
         self.trust_score = trust_score
 
 
-async def rebuild(
+def _sync_rebuild(product_id: str, mentions: list[dict]) -> list[Cluster]:
+    by_feature: dict[str, list[dict]] = defaultdict(list)
+    for m in mentions:
+        by_feature[m.get("feature", "unknown")].append(m)
+
+    clusters: list[Cluster] = []
+    for feat, m_list in by_feature.items():
+        pol = m_list[0].get("polarity", "neg")
+        size = len(m_list)
+        dates = [m.get("created_at") for m in m_list if m.get("created_at")]
+        first_seen = min(dates) if dates else date.today()
+        last_seen = max(dates) if dates else date.today()
+
+        batches: dict[str, int] = defaultdict(int)
+        channels: dict[str, int] = defaultdict(int)
+        for m in m_list:
+            b_id = m.get("batch_id")
+            if b_id:
+                batches[b_id] += 1
+            ch = m.get("channel")
+            if ch:
+                channels[ch] += 1
+
+        dominant_batch = None
+        defect_concentration = 0.0
+        if batches:
+            dominant_batch, count = max(batches.items(), key=lambda x: x[1])
+            defect_concentration = round(count / size, 2)
+
+        issue_type = "isolated"
+        if defect_concentration >= 0.70 and size >= 3 and dominant_batch:
+            issue_type = "batch"
+        elif size >= 5:
+            issue_type = "systemic"
+
+        p_val = 0.01 if defect_concentration >= 0.70 else 1.0
+
+        clusters.append(
+            Cluster(
+                id=f"cluster_{uuid.uuid4().hex[:8]}",
+                product_id=product_id,
+                feature=feat,
+                polarity=pol,
+                issue_type=issue_type,
+                severity="high" if size >= 5 else "medium",
+                first_seen=first_seen,
+                last_seen=last_seen,
+                size=size,
+                channels=dict(channels),
+                batches={k: float(v) for k, v in batches.items()},
+                versions=[],
+                defect_concentration=defect_concentration,
+                dominant_batch_id=dominant_batch,
+                p_value=p_val,
+                lead_time_days=max(0, (last_seen - first_seen).days) if hasattr(last_seen, "__sub__") else 0,
+            )
+        )
+    return clusters
+
+
+def rebuild(
     product_id: str,
-    tenant_id: str = "default",
+    tenant_id: Any = "default",
     session: AsyncSession | None = None,
-) -> list[Cluster]:
+    mentions: list[dict] | None = None,
+) -> Any:
     """
     Public entrypoint for L4 Graph rebuild.
     Reconstructs the issue graph for a product, clusters components, and calculates defect concentration.
+    Supports in-memory mentions list or async DB session.
     """
+    if isinstance(tenant_id, list):
+        return _sync_rebuild(product_id, tenant_id)
+    if mentions is not None:
+        return _sync_rebuild(product_id, mentions)
+
     async def _run(sess: AsyncSession) -> list[Cluster]:
         # 1. Fetch trusted reviews and features for this product
         stmt = (
@@ -282,11 +349,18 @@ async def rebuild(
         await sess.flush()
         return clusters_out
 
-    if session is not None:
-        return await _run(session)
-    else:
-        sessionmaker = get_sessionmaker()
-        async with sessionmaker() as sess:
-            out = await _run(sess)
-            await sess.commit()
-            return out
+    async def _async_wrapper() -> list[Cluster]:
+        if session is not None:
+            return await _run(session)
+        else:
+            sessionmaker = get_sessionmaker()
+            async with sessionmaker() as sess:
+                out = await _run(sess)
+                await sess.commit()
+                return out
+
+    return _async_wrapper()
+
+
+rebuild_graph = rebuild
+

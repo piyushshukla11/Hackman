@@ -44,6 +44,15 @@ class Comparison(BaseModel):
     top_features: list[str] = Field(default_factory=list)
 
 
+class SliceRollup(BaseModel):
+    slice_key: str
+    n_reviews: int
+    n_neg: int
+    neg_rate: float
+    rating_mean: float
+
+
+
 class ConfidenceBreakdown(BaseModel):
     frequency: float
     density: float

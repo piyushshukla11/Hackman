@@ -1,0 +1,417 @@
+# prism_core/config/lexicons/multilingual_sentiment.yaml
+# Native sentiment tokens and contrast conjunctions for 16 languages:
+# 11 Indian: Hindi, Marathi, Bengali, Assamese, Gujarati, Punjabi, Odia, Tamil, Telugu, Kannada, Malayalam (+ Hinglish)
+# 5 International: English, French, German, Japanese, Spanish
+
+lexicons:
+  # Japanese (ja)
+  ja:
+    pos:
+      良い: 0.8
+      いい: 0.7
+      素晴らしい: 0.95
+      最高: 0.95
+      満足: 0.75
+      綺麗: 0.7
+      完璧: 0.95
+      便利: 0.7
+      おすすめ: 0.8
+    neg:
+      悪い: -0.8
+      壊れた: -0.9
+      最悪: -0.95
+      不満: -0.7
+      ゴミ: -0.9
+      使い物にならない: -0.9
+      故障: -0.85
+      動かない: -0.85
+    negation:
+      - "ない"
+      - "なかった"
+      - "ません"
+      - "じゃない"
+      - "ぬ"
+    contrast:
+      - "しかし"
+      - "でも"
+      - "けれども"
+      - "が"
+      - "だが"
+
+  # French (fr)
+  fr:
+    pos:
+      bon: 0.6
+      bonne: 0.6
+      excellent: 0.9
+      excellente: 0.9
+      super: 0.85
+      parfait: 0.95
+      parfaite: 0.95
+      formidable: 0.85
+      adore: 0.9
+      magnifique: 0.9
+      fiable: 0.75
+    neg:
+      mauvais: -0.7
+      mauvaise: -0.7
+      pire: -0.9
+      horrible: -0.9
+      cassé: -0.85
+      cassée: -0.85
+      nul: -0.8
+      nulle: -0.8
+      déçu: -0.75
+      panne: -0.8
+      inutile: -0.8
+    negation:
+      - "pas"
+      - "ne"
+      - "jamais"
+      - "non"
+      - "aucun"
+      - "aucune"
+      - "rien"
+    contrast:
+      - "mais"
+      - "cependant"
+      - "pourtant"
+      - "néanmoins"
+
+  # German (de)
+  de:
+    pos:
+      gut: 0.6
+      ausgezeichnet: 0.95
+      hervorragend: 0.95
+      super: 0.85
+      toll: 0.8
+      perfekt: 0.95
+      liebe: 0.85
+      zufrieden: 0.75
+      empfehlenswert: 0.8
+    neg:
+      schlecht: -0.7
+      furchtbar: -0.9
+      kaputt: -0.9
+      defekt: -0.85
+      schrecklich: -0.9
+      enttäuscht: -0.75
+      unbrauchbar: -0.85
+      schrott: -0.9
+      müll: -0.9
+    negation:
+      - "nicht"
+      - "kein"
+      - "keine"
+      - "keinen"
+      - "nie"
+      - "niemals"
+    contrast:
+      - "aber"
+      - "jedoch"
+      - "allerdings"
+      - "doch"
+
+  # Spanish (es)
+  es:
+    pos:
+      bueno: 0.6
+      buena: 0.6
+      excelente: 0.9
+      genial: 0.85
+      perfecto: 0.95
+      perfecta: 0.95
+      encanta: 0.9
+      satisfecho: 0.75
+      satisfecha: 0.75
+      maravilloso: 0.9
+    neg:
+      malo: -0.7
+      mala: -0.7
+      pésimo: -0.95
+      pésima: -0.95
+      terrible: -0.9
+      roto: -0.85
+      rota: -0.85
+      defectuoso: -0.85
+      decepcionado: -0.75
+      inútil: -0.8
+      basura: -0.9
+    negation:
+      - "no"
+      - "nunca"
+      - "jamás"
+      - "nada"
+      - "tampoco"
+    contrast:
+      - "pero"
+      - "sin embargo"
+      - "aunque"
+
+  # Hindi (hi) & Marathi (mr)
+  hi:
+    pos:
+      अच्छा: 0.6
+      अच्छी: 0.6
+      बढ़िया: 0.85
+      शानदार: 0.9
+      उत्तम: 0.85
+      सुंदर: 0.7
+      मजबूत: 0.75
+      बेहतरीन: 0.95
+      सही: 0.5
+      पसंद: 0.7
+    neg:
+      खराब: -0.8
+      बुरा: -0.7
+      बुरी: -0.7
+      बेकार: -0.85
+      घटिया: -0.95
+      टूटा: -0.8
+      टूटी: -0.8
+      बकवास: -0.95
+      धोखा: -0.9
+      निराशाजनक: -0.8
+    negation:
+      - "नहीं"
+      - "नही"
+      - "ना"
+      - "मत"
+    contrast:
+      - "लेकिन"
+      - "मगर"
+      - "परंतु"
+      - "किंतु"
+
+  mr:
+    pos:
+      छान: 0.75
+      उत्तम: 0.85
+      सुंदर: 0.7
+      उत्कृष्ट: 0.9
+      चांगले: 0.65
+      चांगली: 0.65
+      भारी: 0.8
+      मजबूत: 0.75
+    neg:
+      वाईट: -0.8
+      खराब: -0.8
+      निकृष्ट: -0.9
+      बकवास: -0.95
+      तुटलेले: -0.85
+      बेकार: -0.85
+    negation:
+      - "नाही"
+      - "नको"
+      - "नाहीत"
+    contrast:
+      - "पण"
+      - "परंतु"
+      - "मात्र"
+
+  # Bengali (bn) & Assamese (as)
+  bn:
+    pos:
+      ভালো: 0.65
+      ভাল: 0.65
+      চমৎকার: 0.9
+      সুন্দর: 0.7
+      দুর্দান্ত: 0.95
+      অসাধারণ: 0.95
+      সেরা: 0.9
+      মজবুত: 0.75
+    neg:
+      খারাপ: -0.8
+      বাজে: -0.85
+      ভাঙা: -0.8
+      নিকৃষ্ট: -0.9
+      বেকার: -0.85
+      অপচয়: -0.85
+    negation:
+      - "না"
+      - "নয়"
+      - "নেই"
+      - "নহে"
+    contrast:
+      - "কিন্তু"
+      - "তবে"
+      - "অথচ"
+
+  as:
+    pos:
+      ভাল: 0.65
+      সুন্দৰ: 0.75
+      উৎকৃষ্ট: 0.9
+      বঢ়িয়া: 0.85
+    neg:
+      বেয়া: -0.8
+      ভাঙা: -0.85
+      নিকৃষ্ট: -0.9
+      অপচয়: -0.85
+    negation:
+      - "নহয়"
+      - "নাই"
+      - "না"
+    contrast:
+      - "কিন্তু"
+      - "তথাপি"
+
+  # Gujarati (gu)
+  gu:
+    pos:
+      સારું: 0.65
+      સારો: 0.65
+      સારી: 0.65
+      સરસ: 0.75
+      ઉત્તમ: 0.85
+      સુંદર: 0.7
+      મજબૂત: 0.75
+      શ્રેષ્ઠ: 0.9
+    neg:
+      ખરાબ: -0.8
+      બકવાસ: -0.95
+      તૂટેલું: -0.85
+      બોગસ: -0.85
+      નકામું: -0.85
+      નકામી: -0.85
+      નકામો: -0.85
+    negation:
+      - "નથી"
+      - "ના"
+      - "નહિ"
+    contrast:
+      - "પરંતુ"
+      - "પણ"
+      - "છતાં"
+
+  # Punjabi (pa)
+  pa:
+    pos:
+      ਚੰਗਾ: 0.65
+      ਚੰਗੀ: 0.65
+      ਵਧੀਆ: 0.85
+      ਸ਼ਾਨਦਾਰ: 0.9
+      ਸੋਹਣਾ: 0.7
+      ਬਹੁਤ ਵਧੀਆ: 0.9
+    neg:
+      ਮਾੜਾ: -0.8
+      ਮਾੜੀ: -0.8
+      ਖਰਾਬ: -0.8
+      ਬਕਵਾਸ: -0.95
+      ਟੁੱਟਿਆ: -0.85
+    negation:
+      - "ਨਹੀਂ"
+      - "ਨਾ"
+    contrast:
+      - "ਪਰ"
+      - "ਲੇਕਿਨ"
+
+  # Odia (or)
+  or:
+    pos:
+      ଭଲ: 0.65
+      ବହୁତ ଭଲ: 0.85
+      ସୁନ୍ଦର: 0.7
+      ଉତ୍କୃଷ୍ଟ: 0.9
+    neg:
+      ଖରାପ: -0.8
+      ବେକାର: -0.85
+      ଭଙ୍ଗା: -0.85
+      ନିକୃଷ୍ଟ: -0.9
+    negation:
+      - "ନାହିଁ"
+      - "ନୁହେଁ"
+      - "ନା"
+    contrast:
+      - "କିନ୍ତୁ"
+      - "ତଥାପି"
+
+  # Tamil (ta)
+  ta:
+    pos:
+      நல்ல: 0.65
+      அருமை: 0.9
+      சிறப்பு: 0.85
+      சூப்பர்: 0.85
+      தரம்: 0.75
+      அழகு: 0.7
+    neg:
+      மோசம்: -0.8
+      கேவலம்: -0.95
+      உடைந்தது: -0.85
+      வீண்: -0.85
+      குறைபாடு: -0.8
+    negation:
+      - "இல்லை"
+      - "வேண்டாம்"
+      - "அல்ல"
+    contrast:
+      - "ஆனால்"
+      - "எனினும்"
+
+  # Telugu (te)
+  te:
+    pos:
+      మంచి: 0.65
+      బాగుంది: 0.75
+      చాలా బాగుంది: 0.9
+      అద్భుతం: 0.95
+      సూపర్: 0.85
+      నాణ్యమైన: 0.75
+    neg:
+      చెత్త: -0.9
+      బాగాలేదు: -0.8
+      విరిగింది: -0.85
+      పనికిరాని: -0.85
+      నష్టం: -0.8
+    negation:
+      - "లేదు"
+      - "కాదు"
+    contrast:
+      - "కానీ"
+      - "అయితే"
+
+  # Kannada (kn)
+  kn:
+    pos:
+      ಉತ್ತಮ: 0.8
+      ಚೆನ್ನಾಗಿದೆ: 0.75
+      ತುಂಬಾ ಚೆನ್ನಾಗಿದೆ: 0.9
+      ಅದ್ಭುತ: 0.95
+      ಸೂಪರ್: 0.85
+      ಗುಣಮಟ್ಟ: 0.75
+    neg:
+      ಕೆಟ್ಟ: -0.8
+      ಹಾಳಾಗಿದೆ: -0.85
+      ಬರುವುದಿಲ್ಲ: -0.75
+      ವ್ಯರ್ಥ: -0.85
+      ವೇಸ್ಟ್: -0.85
+    negation:
+      - "ಇಲ್ಲ"
+      - "ಅಲ್ಲ"
+      - "ಬೇಡ"
+    contrast:
+      - "ಆದರೆ"
+      - "ಆದರೂ"
+
+  # Malayalam (ml)
+  ml:
+    pos:
+      നല്ല: 0.65
+      വളരെ നല്ലത്: 0.9
+      മികച്ച: 0.85
+      മികച്ചത്: 0.85
+      സൂപ്പർ: 0.85
+    neg:
+      മോശം: -0.8
+      കേടായി: -0.85
+      തകരാർ: -0.8
+      കൊള്ളില്ല: -0.85
+    negation:
+      - "ഇല്ല"
+      - "അല്ല"
+      - "അരുത്"
+    contrast:
+      - "പക്ഷെ"
+      - "എങ്കിലും"

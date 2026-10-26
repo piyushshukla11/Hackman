@@ -17,6 +17,8 @@ class NormalisedReview(BaseModel):
     emojis: list[str] = Field(default_factory=list)
     lang_tier: Literal[1, 2, 3] = 1
     lang_tier_penalty: bool = False
+    candidate_langs: list[str] = Field(default_factory=list)
+    request_review: bool = False
 
 
 class GateResult(BaseModel):

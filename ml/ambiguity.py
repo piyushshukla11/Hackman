@@ -27,7 +27,7 @@ SARCASM_PATTERNS = [
     re.compile(r"wow\b.*\b(broke|dead|failed|worst)\b", re.IGNORECASE),
     re.compile(r"great job\b.*\b(garbage|trash|useless)\b", re.IGNORECASE),
     re.compile(r"superb\b.*\b(disaster|waste)\b", re.IGNORECASE),
-    re.compile(r"\b/s\b", re.IGNORECASE),
+    re.compile(r"(?:^|\s)/s(?:\s|$|[.!?])", re.IGNORECASE),
 ]
 
 

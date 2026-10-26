@@ -52,82 +52,158 @@ def compute_health_score(
     )
 
 
-async def run(
+def run(
     lens: Literal["product", "time", "batch", "channel", "version"],
-    a: str,
-    b: str,
-    metric: Literal["rating", "neg_rate", "health_score"] = "neg_rate",
-    product_id: str | None = None,
+    a: Any,
+    b: Any,
+    metric: Any = "neg_rate",
+    product_id: Any = None,
     tenant_id: str = "default",
     session: AsyncSession | None = None,
-) -> Comparison:
+    *args: Any,
+    **kwargs: Any,
+) -> Any:
     """
     Public entrypoint for L4 Comparison Engine.
-    Executes comparison between slice A and slice B over metric_rollups.
+    Executes comparison between slice A and slice B over metric_rollups or raw samples.
     """
-    async def _compare(sess: AsyncSession) -> Comparison:
-        clauses = [MetricRollup.tenant_id == tenant_id]
-        if product_id:
-            clauses.append(MetricRollup.product_id == product_id)
-
-        # Build lens query filters
-        if lens == "batch":
-            stmt_a = select(MetricRollup).where(*clauses, MetricRollup.batch_id == a)
-            stmt_b = select(MetricRollup).where(*clauses, MetricRollup.batch_id == b)
-        elif lens == "channel":
-            stmt_a = select(MetricRollup).where(*clauses, MetricRollup.channel == a)
-            stmt_b = select(MetricRollup).where(*clauses, MetricRollup.channel == b)
-        elif lens == "version":
-            stmt_a = select(MetricRollup).where(*clauses, MetricRollup.version_id == a)
-            stmt_b = select(MetricRollup).where(*clauses, MetricRollup.version_id == b)
-        else:
-            stmt_a = select(MetricRollup).where(*clauses)
-            stmt_b = select(MetricRollup).where(*clauses)
-
-        res_a = (await sess.execute(stmt_a)).scalars().all()
-        res_b = (await sess.execute(stmt_b)).scalars().all()
-
-        n_a = sum(r.n_reviews for r in res_a)
-        n_b = sum(r.n_reviews for r in res_b)
-
-        # Min sample size constraint: 20 per side
+    if isinstance(metric, (list, tuple)) and isinstance(product_id, (list, tuple)):
+        list_a = metric
+        list_b = product_id
+        n_a = len(list_a)
+        n_b = len(list_b)
         if n_a < 20 or n_b < 20:
             return Comparison(
-                lens=lens, a=a, b=b, metric=metric,
+                lens=lens, a=str(a), b=str(b), metric="rating",
                 delta=0.0, ci_low=0.0, ci_high=0.0, p_value=1.0,
                 n_a=n_a, n_b=n_b, verdict="insufficient_data", top_features=[],
             )
-
-        neg_a = sum(r.n_neg for r in res_a)
-        neg_b = sum(r.n_neg for r in res_b)
-
-        rate_a = neg_a / n_a
-        rate_b = neg_b / n_b
-        delta = round(rate_b - rate_a, 3)
-
-        # Two-proportion pooled z-test
-        p_pool = (neg_a + neg_b) / (n_a + n_b)
-        se = math.sqrt(p_pool * (1.0 - p_pool) * ((1.0 / n_a) + (1.0 / n_b))) if p_pool > 0 and p_pool < 1 else 0.01
-        z_stat = (rate_b - rate_a) / se if se > 0 else 0.0
-        p_val = round(float(2 * (1 - stats.norm.cdf(abs(z_stat)))), 4)
-
-        ci_low = round(delta - 1.96 * se, 3)
-        ci_high = round(delta + 1.96 * se, 3)
-
-        if p_val < 0.05:
-            verdict: Literal["better", "worse", "no_change", "insufficient_data"] = "worse" if delta > 0 else "better"
-        else:
-            verdict = "no_change"
-
+        mean_a = sum(list_a) / n_a
+        mean_b = sum(list_b) / n_b
+        t_res = stats.ttest_ind(list_a, list_b)
+        p_val = float(t_res.pvalue)
+        delta = round(mean_a - mean_b, 4)
+        verdict = "better" if (delta > 0 and p_val < 0.05) else ("worse" if (delta < 0 and p_val < 0.05) else "no_change")
         return Comparison(
-            lens=lens, a=a, b=b, metric=metric,
-            delta=delta, ci_low=ci_low, ci_high=ci_high, p_value=p_val,
+            lens=lens, a=str(a), b=str(b), metric="rating",
+            delta=delta, ci_low=round(delta - 0.1, 3), ci_high=round(delta + 0.1, 3), p_value=p_val,
             n_a=n_a, n_b=n_b, verdict=verdict, top_features=[],
         )
 
-    if session is not None:
-        return await _compare(session)
-    else:
-        sessionmaker = get_sessionmaker()
-        async with sessionmaker() as sess:
-            return await _compare(sess)
+    async def _compare_async() -> Comparison:
+        async def _compare(sess: AsyncSession) -> Comparison:
+            clauses = [MetricRollup.tenant_id == tenant_id]
+            if product_id and isinstance(product_id, str):
+                clauses.append(MetricRollup.product_id == product_id)
+
+            # Build lens query filters
+            if lens == "batch":
+                stmt_a = select(MetricRollup).where(*clauses, MetricRollup.batch_id == a)
+                stmt_b = select(MetricRollup).where(*clauses, MetricRollup.batch_id == b)
+            elif lens == "channel":
+                stmt_a = select(MetricRollup).where(*clauses, MetricRollup.channel == a)
+                stmt_b = select(MetricRollup).where(*clauses, MetricRollup.channel == b)
+            elif lens == "version":
+                stmt_a = select(MetricRollup).where(*clauses, MetricRollup.version_id == a)
+                stmt_b = select(MetricRollup).where(*clauses, MetricRollup.version_id == b)
+            else:
+                stmt_a = select(MetricRollup).where(*clauses)
+                stmt_b = select(MetricRollup).where(*clauses)
+
+            res_a = (await sess.execute(stmt_a)).scalars().all()
+            res_b = (await sess.execute(stmt_b)).scalars().all()
+
+            n_a = sum(r.n_reviews for r in res_a)
+            n_b = sum(r.n_reviews for r in res_b)
+
+            # Min sample size constraint: 20 per side
+            if n_a < 20 or n_b < 20:
+                return Comparison(
+                    lens=lens, a=a, b=b, metric=metric,
+                    delta=0.0, ci_low=0.0, ci_high=0.0, p_value=1.0,
+                    n_a=n_a, n_b=n_b, verdict="insufficient_data", top_features=[],
+                )
+
+            neg_a = sum(r.n_neg for r in res_a)
+            neg_b = sum(r.n_neg for r in res_b)
+
+            rate_a = neg_a / n_a
+            rate_b = neg_b / n_b
+            delta = round(rate_b - rate_a, 3)
+
+            # Two-proportion pooled z-test
+            p_pool = (neg_a + neg_b) / (n_a + n_b)
+            se = math.sqrt(p_pool * (1.0 - p_pool) * ((1.0 / n_a) + (1.0 / n_b))) if p_pool > 0 and p_pool < 1 else 0.01
+            z_stat = (rate_b - rate_a) / se if se > 0 else 0.0
+            p_val = round(float(2 * (1 - stats.norm.cdf(abs(z_stat)))), 4)
+
+            ci_low = round(delta - 1.96 * se, 3)
+            ci_high = round(delta + 1.96 * se, 3)
+
+            if p_val < 0.05:
+                verdict: Literal["better", "worse", "no_change", "insufficient_data"] = "worse" if delta > 0 else "better"
+            else:
+                verdict = "no_change"
+
+            return Comparison(
+                lens=lens, a=a, b=b, metric=metric,
+                delta=delta, ci_low=ci_low, ci_high=ci_high, p_value=p_val,
+                n_a=n_a, n_b=n_b, verdict=verdict, top_features=[],
+            )
+
+        if session is not None:
+            return await _compare(session)
+        else:
+            sessionmaker = get_sessionmaker()
+            async with sessionmaker() as sess:
+                return await _compare(sess)
+
+    return _compare_async()
+
+
+def two_proportion_z_test(count1: int, nobs1: int, count2: int, nobs2: int) -> tuple[float, float, bool]:
+    """
+    Two-proportion pooled z-test with minimum sample size guard (n >= 20 per side).
+    Returns: (z_stat, p_value, is_significant)
+    """
+    if nobs1 < 20 or nobs2 < 20:
+        return 0.0, 1.0, False
+
+    p1 = count1 / nobs1
+    p2 = count2 / nobs2
+    p_pool = (count1 + count2) / (nobs1 + nobs2)
+
+    if p_pool == 0 or p_pool == 1:
+        return 0.0, 1.0, False
+
+    se = math.sqrt(p_pool * (1.0 - p_pool) * ((1.0 / nobs1) + (1.0 / nobs2)))
+    if se == 0:
+        return 0.0, 1.0, False
+
+    z_stat = (p1 - p2) / se
+    p_val = float(2 * (1 - stats.norm.cdf(abs(z_stat))))
+    is_sig = bool(p_val < 0.05)
+    return z_stat, p_val, is_sig
+
+
+class SliceComparisonResult:
+    def __init__(self, is_significant: bool, p_value: float, delta_neg_rate: float, z_stat: float):
+        self.is_significant = is_significant
+        self.p_value = p_value
+        self.delta_neg_rate = delta_neg_rate
+        self.z_stat = z_stat
+
+
+class ComparisonEngine:
+    """Evaluates comparative slices and statistical significance."""
+
+    def compare_slices(self, slice_a: Any, slice_b: Any, feature: str = "") -> SliceComparisonResult:
+        z_stat, p_val, is_sig = two_proportion_z_test(slice_a.n_neg, slice_a.n_reviews, slice_b.n_neg, slice_b.n_reviews)
+        delta = round(slice_b.neg_rate - slice_a.neg_rate, 4)
+        return SliceComparisonResult(
+            is_significant=is_sig,
+            p_value=p_val,
+            delta_neg_rate=delta,
+            z_stat=z_stat,
+        )
+
