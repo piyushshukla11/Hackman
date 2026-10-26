@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRISM Review Intelligence</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="prism-app">
+    <!-- Header -->
+    <header class="prism-header">
+      <div class="logo-group">
+        <div class="prism-logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5" stroke="#06B6D4" stroke-width="2" fill="rgba(6,182,212,0.15)"/>
+            <circle cx="12" cy="12" r="3" fill="#10B981"/>
+          </svg>
+        </div>
+        <div class="logo-titles">
+          <h1>PRISM</h1>
+          <span class="subtitle">Review Intelligence Engine</span>
+        </div>
+      </div>
+      <div class="connection-status" id="connection-status" title="Connecting to PRISM API...">
+        <span class="status-dot" id="status-dot"></span>
+        <span class="status-label" id="status-label">Checking...</span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="prism-main">
+      <!-- Detection Card -->
+      <div class="card detection-card">
+        <div class="card-header">
+          <span class="badge" id="platform-badge">Detecting Site...</span>
+          <span class="count-pill"><strong id="reviews-count">0</strong> Reviews Found</span>
+        </div>
+        <div class="product-detected">
+          <div class="product-label">Current Page Product</div>
+          <div class="product-sku" id="product-sku">Scanning active page...</div>
+        </div>
+      </div>
+
+      <!-- Action Area -->
+      <div class="actions-group">
+        <button id="btn-capture" class="btn btn-primary" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Capture & Ingest to PRISM</span>
+        </button>
+        <button id="btn-preview" class="btn btn-secondary">
+          <span>Inspect Detected Reviews</span>
+        </button>
+      </div>
+
+      <!-- Result Banner -->
+      <div id="result-banner" class="result-banner hidden">
+        <div class="result-icon">✓</div>
+        <div class="result-text">
+          <strong id="result-title">Ingestion Successful</strong>
+          <p id="result-desc">Ingested reviews into PRISM Engine.</p>
+        </div>
+      </div>
+
+      <!-- Review Preview Drawer -->
+      <div id="preview-drawer" class="preview-drawer hidden">
+        <div class="drawer-header">
+          <span>Visible Reviews Preview</span>
+          <button id="btn-close-drawer" class="btn-text">Close</button>
+        </div>
+        <div id="preview-list" class="preview-list">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Settings Accordion -->
+      <div class="card settings-card">
+        <div class="settings-toggle" id="settings-toggle">
+          <span>API Connection Settings</span>
+          <span class="toggle-icon" id="toggle-icon">▾</span>
+        </div>
+        <div class="settings-body hidden" id="settings-body">
+          <div class="form-group">
+            <label for="input-api-url">PRISM Backend URL</label>
+            <input type="text" id="input-api-url" value="http://localhost:8000" placeholder="http://localhost:8000">
+          </div>
+          <div class="form-group">
+            <label for="input-token">Auth Bearer Token</label>
+            <input type="text" id="input-token" value="demo-token" placeholder="Bearer JWT or API Key">
+          </div>
+          <div class="form-group">
+            <label for="input-tenant">Tenant ID</label>
+            <input type="text" id="input-tenant" value="default" placeholder="default">
+          </div>
+          <div class="settings-actions">
+            <button id="btn-save-settings" class="btn btn-small btn-primary">Save & Test</button>
+            <button id="btn-use-demo" class="btn btn-small btn-secondary">Reset to Demo</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="prism-footer">
+      <a href="http://localhost:8000/docs" target="_blank" class="footer-link">Swagger Docs</a>
+      <span>&bull;</span>
+      <span class="footer-version">v1.0.0 (MV3)</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
