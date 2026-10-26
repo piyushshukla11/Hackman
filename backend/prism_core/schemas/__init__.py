@@ -42,6 +42,12 @@ from prism_core.schemas.ops import (
     TrendIndex,
     UserProfile,
 )
+from prism_core.schemas.survey import (
+    RetrievedEvidence,
+    SurveyGenerationResult,
+    SurveyQuestion,
+    SurveyRetrievalContext,
+)
 
 __all__ = [
     "ProductRef",
@@ -73,4 +79,8 @@ __all__ = [
     "UserProfile",
     "OnboardingPayload",
     "PersonaPresetPayload",
+    "RetrievedEvidence",
+    "SurveyRetrievalContext",
+    "SurveyQuestion",
+    "SurveyGenerationResult",
 ]

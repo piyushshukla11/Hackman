@@ -17,9 +17,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from prism_core.db.base import get_sessionmaker
-from prism_core.db.models import ClusterMember, IssueCluster, Product, Review, Survey, SurveyResponse
+from prism_core.db.models import IssueCluster, Survey, SurveyResponse
 from prism_core.mail import send as send_email
-from prism_core.ml.llm_client import LLMClient
+from prism_core.survey.generator import SurveyGenerator
 
 
 async def plan(
@@ -30,55 +30,48 @@ async def plan(
 ) -> tuple[Survey, str]:
     """
     RAG-Grounded Diagnostic Survey Planner:
-    1. Retrieves customer verbatims from issue cluster members
-    2. Retrieves product technical specs from products table
-    3. Drafts 3 root-cause diagnostic questions via Gemini prompt
-    4. Issues signed token with 7-day expiration
+    1. Retrieves customer verbatims from issue cluster members with tenant/product isolation.
+    2. Retrieves product technical specs and dominant batch/version context.
+    3. Drafts 3 root-cause diagnostic questions via Gemini prompt or category fallback.
+    4. Validates grounding, evidence refs, and uncertainty options.
+    5. Issues signed token with 7-day expiration.
     Returns: (survey_record, raw_token)
     """
     async def _plan(sess: AsyncSession) -> tuple[Survey, str]:
-        llm = LLMClient()
+        generator = SurveyGenerator()
 
-        # 1. Fetch cluster
-        cluster = await sess.get(IssueCluster, issue_id)
-        if not cluster:
-            raise ValueError(f"Issue cluster {issue_id} not found")
-
-        # 2. Fetch product specs
-        product = await sess.get(Product, cluster.product_id)
-        specs = product.specs if product else {}
-
-        # 3. Fetch verbatim customer quotes from cluster members
-        members_stmt = (
-            select(Review.text_original)
-            .join(ClusterMember, Review.id == ClusterMember.review_id)
-            .where(ClusterMember.cluster_id == issue_id)
-            .limit(4)
-        )
-        verbatims = list((await sess.execute(members_stmt)).scalars().all())
-
-        # 4. Generate RAG-grounded diagnostic questions
-        questions = await llm.generate_rag_survey_questions(
-            feature=cluster.feature,
-            verbatims=verbatims,
-            specs=specs,
-            batch_code=cluster.dominant_batch_id,
+        # 1. Fetch retrieval context with strict multi-tenant isolation
+        context = await generator.retrieve_context(
+            session=sess,
+            issue_id=issue_id,
+            tenant_id=tenant_id,
         )
 
-        # 5. Generate secure token
+        if not context.is_sufficient:
+            if "not found" in (context.insufficient_reason or "").lower():
+                raise ValueError(f"Issue cluster {issue_id} not found")
+            raise ValueError(f"Cannot generate survey: {context.insufficient_reason}")
+
+        # 2. Generate RAG-grounded diagnostic questions
+        gen_result = await generator.generate_diagnostic_survey(context)
+        if gen_result.status == "insufficient_evidence" or not gen_result.questions:
+            raise ValueError(f"Cannot generate survey: {gen_result.fallback_reason or 'Insufficient evidence'}")
+
+        questions_payload = [q.model_dump() for q in gen_result.questions]
+
+        # 3. Generate secure token
         raw_token = secrets.token_urlsafe(32)
         token_hash = hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
 
         # Review id for tracking
-        first_member_stmt = select(ClusterMember.review_id).where(ClusterMember.cluster_id == issue_id).limit(1)
-        rev_id = (await sess.execute(first_member_stmt)).scalar() or "rev_placeholder"
+        rev_id = context.evidence_items[0].review_id if context.evidence_items else "rev_placeholder"
 
         survey = Survey(
             tenant_id=tenant_id,
             issue_id=issue_id,
             review_id=rev_id,
             token_hash=token_hash,
-            questions=questions,
+            questions=questions_payload,
             status="sent",
             expires_at=datetime.now(timezone.utc) + timedelta(days=7),
         )
@@ -213,4 +206,89 @@ class SurveyManager:
 
     def __init__(self, settings=None):
         self.settings = settings
+        self.generator = SurveyGenerator(settings=settings)
+
+    async def retrieve_context(
+        self,
+        session: AsyncSession,
+        issue_id: str,
+        tenant_id: str,
+    ):
+        """Retrieve evidence context with strict multi-tenant isolation."""
+        return await self.generator.retrieve_context(session=session, issue_id=issue_id, tenant_id=tenant_id)
+
+    def retrieve_from_memory(
+        self,
+        cluster: dict[str, Any],
+        product: dict[str, Any] | None,
+        members: list[dict[str, Any]],
+        tenant_id: str,
+    ):
+        """Retrieve evidence context from in-memory objects with strict isolation."""
+        return self.generator.retrieve_from_memory(
+            cluster=cluster,
+            product=product,
+            members=members,
+            tenant_id=tenant_id,
+        )
+
+    async def generate_diagnostic_survey(self, context, timeout_seconds: float = 8.0):
+        """Generate RAG diagnostic survey questions for given context."""
+        return await self.generator.generate_diagnostic_survey(context=context, timeout_seconds=timeout_seconds)
+
+    def validate_questions(self, raw_questions: list[dict[str, Any]], context):
+        """Validate question schema, uncertainty option, and evidence references."""
+        return self.generator.validate_questions(raw_questions=raw_questions, context=context)
+
+    def get_category_fallback_questions(self, category: str | None, feature: str, context):
+        """Provide calibrated fallback questions for a given category."""
+        return self.generator.get_category_fallback_questions(category=category, feature=feature, context=context)
+
+    async def plan(
+        self,
+        issue_id: str,
+        trigger: str = "manual",
+        tenant_id: str = "default",
+        session: AsyncSession | None = None,
+    ):
+        return await plan(issue_id=issue_id, trigger=trigger, tenant_id=tenant_id, session=session)
+
+    async def send_survey_invite(
+        self,
+        survey: Survey,
+        raw_token: str,
+        to_email: str,
+        customer_name: str = "Valued Customer",
+        product_name: str = "Device",
+        tenant_id: str = "default",
+        session: AsyncSession | None = None,
+    ):
+        return await send_survey_invite(
+            survey=survey,
+            raw_token=raw_token,
+            to_email=to_email,
+            customer_name=customer_name,
+            product_name=product_name,
+            tenant_id=tenant_id,
+            session=session,
+        )
+
+    async def ingest_reply(
+        self,
+        raw_token: str,
+        answers: dict[str, Any],
+        session: AsyncSession | None = None,
+    ):
+        return await ingest_reply(raw_token=raw_token, answers=answers, session=session)
+
+
+__all__ = [
+    "SurveyGenerator",
+    "SurveyManager",
+    "plan",
+    "send_survey_invite",
+    "ingest_reply",
+    "generate_survey_token",
+    "verify_survey_token",
+]
 
