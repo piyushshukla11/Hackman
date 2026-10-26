@@ -24,29 +24,29 @@ def mask_pii(text: str) -> tuple[str, dict[str, str]]:
     Returns (masked_text, mapping_to_restore).
     """
     mapping: dict[str, str] = {}
-    email_c = 0
-    phone_c = 0
-    order_c = 0
+    email_idx = 0
+    phone_idx = 0
+    order_idx = 0
 
     def _replace_email(match):
-        nonlocal email_c
-        token = f"[EMAIL_{email_c}]"
+        nonlocal email_idx
+        token = f"[EMAIL_{email_idx}]"
         mapping[token] = match.group(0)
-        email_c += 1
+        email_idx += 1
         return token
 
     def _replace_phone(match):
-        nonlocal phone_c
-        token = f"[PHONE_{phone_c}]"
+        nonlocal phone_idx
+        token = f"[PHONE_{phone_idx}]"
         mapping[token] = match.group(0)
-        phone_c += 1
+        phone_idx += 1
         return token
 
     def _replace_order(match):
-        nonlocal order_c
-        token = f"[ORDER_{order_c}]"
+        nonlocal order_idx
+        token = f"[ORDER_{order_idx}]"
         mapping[token] = match.group(0)
-        order_c += 1
+        order_idx += 1
         return token
 
     text = EMAIL_REGEX.sub(_replace_email, text)

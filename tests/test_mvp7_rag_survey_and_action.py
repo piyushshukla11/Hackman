@@ -11,9 +11,10 @@ from __future__ import annotations
 
 import pytest
 
-from prism_core.survey import SurveyManager, generate_survey_token, verify_survey_token
+from prism_core.survey import generate_survey_token, verify_survey_token
 from prism_core.serious import assess_serious_complaint
 from prism_core.mail import render_survey_invitation
+
 
 
 def test_survey_token_hmac():
@@ -57,3 +58,31 @@ def test_mail_template_rendering():
     assert "Aarav" in rendered
     assert "AuraSound ANC Headphones" in rendered
     assert "https://prism.app/survey/tok_12345" in rendered
+
+
+@pytest.mark.asyncio
+async def test_mail_dispatch_and_preview():
+    from unittest.mock import AsyncMock, MagicMock
+    from prism_core.mail import send
+
+    session_mock = MagicMock()
+    session_mock.add = MagicMock()
+    session_mock.flush = AsyncMock()
+
+    ctx = {
+        "customer_name": "Judge Smith",
+        "product_name": "AuraWave ANC",
+        "feature_name": "Battery Heat",
+        "survey_url": "https://prism.app/v1/survey/demo123",
+    }
+    res = await send(
+        template_name="survey",
+        to_email="judge@example.com",
+        ctx=ctx,
+        tenant_id="tenant_test",
+        session=session_mock,
+    )
+    assert res["status"] in ("sent", "delivered")
+    assert res["to_email"] == "judge@example.com"
+    assert "/v1/email/outbox/" in res["preview_url"]
+

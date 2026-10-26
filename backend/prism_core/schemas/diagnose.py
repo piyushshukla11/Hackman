@@ -43,6 +43,11 @@ class Comparison(BaseModel):
     verdict: Literal["better", "worse", "no_change", "insufficient_data"]
     top_features: list[str] = Field(default_factory=list)
 
+    def __await__(self):
+        async def _identity():
+            return self
+        return _identity().__await__()
+
 
 class SliceRollup(BaseModel):
     slice_key: str
@@ -64,6 +69,29 @@ class ConfidenceBreakdown(BaseModel):
     survey_delta: float
     final: float = Field(..., ge=0.0, le=1.0)
     level: Literal["act", "monitor", "gather"]  # >=0.75 / 0.45-0.74 / <0.45
+
+
+class SliceRollup(BaseModel):
+    """Aggregated metrics for a single comparison slice (batch, version, channel, etc.)."""
+
+    slice_key: str
+    n_reviews: int = Field(..., ge=0)
+    n_neg: int = Field(default=0, ge=0)
+    neg_rate: float = Field(default=0.0, ge=0.0, le=1.0)
+    rating_mean: float = Field(default=0.0, ge=0.0, le=5.0)
+
+
+class SliceComparison(BaseModel):
+    """Result of comparing two SliceRollups for a given feature."""
+
+    feature: str
+    slice_a: str
+    slice_b: str
+    delta_neg_rate: float
+    p_value: float
+    z_stat: float
+    is_significant: bool
+    verdict: Literal["worse", "better", "no_change", "insufficient_data"]
 
 
 class TrendPointSchema(BaseModel):

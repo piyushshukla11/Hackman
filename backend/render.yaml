@@ -15,7 +15,7 @@ services:
     region: oregon
     plan: starter
     dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    dockerContext: .
     rootDir: .
     envVars:
       - key: DATABASE_URL
@@ -33,7 +33,7 @@ services:
     region: oregon
     plan: starter
     dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    dockerContext: .
     rootDir: .
     dockerCommand: "python -m workflows.runner"
     envVars:

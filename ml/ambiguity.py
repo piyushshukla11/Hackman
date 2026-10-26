@@ -25,10 +25,11 @@ HEDGE_WORDS = {"maybe", "perhaps", "seems", "somewhat", "not sure", "kind of", "
 ADVERSATIVE_WORDS = {"but", "however", "although", "lekin", "magar", "par", "yet", "still"}
 SARCASM_PATTERNS = [
     re.compile(r"wow\b.*\b(broke|dead|failed|worst)\b", re.IGNORECASE),
-    re.compile(r"great job\b.*\b(garbage|trash|useless)\b", re.IGNORECASE),
-    re.compile(r"superb\b.*\b(disaster|waste)\b", re.IGNORECASE),
-    re.compile(r"(?:^|\s)/s(?:\s|$|[.!?])", re.IGNORECASE),
+    re.compile(r"great job\b.*\b(garbage|trash|useless|broke|dead|failed)\b", re.IGNORECASE),
+    re.compile(r"superb\b.*\b(disaster|waste|dead|broke|failed)\b", re.IGNORECASE),
+    re.compile(r"(?:^|\s)/s(?:\s|$|[!.,?])", re.IGNORECASE),
 ]
+
 
 
 class AmbiguityScorer:

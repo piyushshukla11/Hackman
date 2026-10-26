@@ -146,3 +146,101 @@ async def submit_survey_page(
         return HTMLResponse("<div style='text-align:center;padding:50px;font-family:sans-serif;color:#0284c7;'><h2>Feedback Recorded</h2><p>Thank you! Your feedback has been integrated directly into our root-cause diagnostic model.</p></div>")
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+# ── Live Demo Email Endpoints ──────────────────────────────────────────────────
+
+class TestEmailPayload(BaseModel):
+    to_email: EmailStr
+    customer_name: str = "Judge / Quality Lead"
+    product_name: str = "AuraWave Wireless ANC Headphones"
+    feature_name: str = "Battery Charging & Thermal Regulation"
+
+
+@router.post("/email/send-test")
+async def send_test_email(
+    payload: TestEmailPayload,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """
+    Live Demo Email Dispatcher:
+    Sends an actual diagnostic survey invitation to any recipient email (e.g. Judge's inbox)
+    using Resend REST API or standard SMTP, and logs to the Outbox.
+    """
+    ctx = {
+        "customer_name": payload.customer_name,
+        "product_name": payload.product_name,
+        "feature_name": payload.feature_name,
+        "survey_url": "/v1/survey/demo_token",
+        "unsubscribe_url": "/v1/survey/demo_token/unsubscribe",
+        "subject": f"PRISM Diagnostic Investigation: {payload.product_name}",
+    }
+    dispatch_result = await send_mail(
+        template_name="survey",
+        to_email=payload.to_email,
+        ctx=ctx,
+        tenant_id=user.tenant_id,
+        session=db,
+    )
+    return {
+        "status": "success",
+        "message": f"Email successfully dispatched to {payload.to_email}",
+        "delivery": dispatch_result,
+    }
+
+
+@router.get("/email/outbox")
+async def list_email_outbox(
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    limit: int = 50,
+):
+    """List recent emails sent through PRISM with delivery status and preview URLs."""
+    from prism_core.db.models import EmailOutbox
+    from sqlalchemy import desc
+
+    stmt = (
+        select(EmailOutbox)
+        .where(EmailOutbox.tenant_id == user.tenant_id)
+        .order_by(desc(EmailOutbox.created_at))
+        .limit(limit)
+    )
+    res = await db.execute(stmt)
+    records = res.scalars().all()
+
+    return [
+        {
+            "id": r.id,
+            "template": r.template,
+            "to_email": r.payload.get("to_email", "masked"),
+            "subject": r.payload.get("subject", "Diagnostic Survey"),
+            "status": r.status,
+            "provider_id": r.provider_id,
+            "created_at": r.created_at.isoformat(),
+            "sent_at": r.sent_at.isoformat() if r.sent_at else None,
+            "error": r.payload.get("error"),
+            "preview_url": f"/v1/email/outbox/{r.id}/preview",
+        }
+        for r in records
+    ]
+
+
+@router.get("/email/outbox/{outbox_id}/preview", response_class=HTMLResponse)
+async def preview_email_html(
+    outbox_id: str,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Serve the raw rendered HTML of any outbox email for instant live demo inspection."""
+    from prism_core.db.models import EmailOutbox
+
+    outbox_entry = await db.get(EmailOutbox, outbox_id)
+    if not outbox_entry:
+        return HTMLResponse("<h2>Email not found in outbox.</h2>", status_code=404)
+
+    html_content = outbox_entry.payload.get("html_body")
+    if not html_content:
+        return HTMLResponse("<h2>Email has no rendered HTML body.</h2>", status_code=404)
+
+    return HTMLResponse(content=html_content)
+

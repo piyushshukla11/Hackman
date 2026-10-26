@@ -1,0 +1,70 @@
+services:
+  # ─── PROD: Managed Postgres with pgvector ───────────────────────────────────
+  - name: prism-db
+    type: pserv
+    plan: starter
+    region: oregon
+    databaseName: prism
+    databaseUser: prism
+    postgresMajorVersion: 16
+
+  # ─── PROD: FastAPI web service ───────────────────────────────────────────────
+  - name: prism-api
+    type: web
+    env: docker
+    region: oregon
+    plan: starter
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    rootDir: .
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: prism-db
+          property: connectionString
+      - fromGroup: prism-prod-secrets
+    preDeployCommand: "alembic upgrade head"
+    healthCheckPath: /health
+
+  # ─── PROD: Render Workflows worker ──────────────────────────────────────────
+  - name: prism-workflows
+    type: worker
+    env: docker
+    region: oregon
+    plan: starter
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    rootDir: .
+    dockerCommand: "python -m workflows.runner"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: prism-db
+          property: connectionString
+      - fromGroup: prism-prod-secrets
+    scaling:
+      minInstances: 0
+      maxInstances: 3
+
+  # ─── Source simulators (Account 3 in real deploy; stub here) ────────────────
+  # prism-sim-* services are defined separately in account-3's render.yaml
+
+envVarGroups:
+  - name: prism-prod-secrets
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SARVAM_KEY
+        sync: false
+      - key: GEMINI_KEY
+        sync: false
+      - key: MAIL_PROVIDER_KEY
+        sync: false
+      - key: SLACK_WEBHOOK
+        sync: false
+      - key: RENDER_API_KEY
+        sync: false
+      - key: MODEL_DIR
+        value: /models/multilingual-e5-small
+      - key: ENVIRONMENT
+        value: production

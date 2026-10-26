@@ -11,24 +11,37 @@ from __future__ import annotations
 
 import re
 from datetime import datetime, timezone
-from typing import Literal
+from typing import Literal, Any
 
 from prism_core.schemas.clean import NormalisedReview
 from prism_core.schemas.understand import ReviewAnalysis, SeriousAssessment
 
-SAFETY_KEYWORDS = {
-    # Thermal & Electrical
-    "fire", "smoke", "spark", "blast", "exploded", "explosion", "burnt", "burning", "shock", "electric shock",
-    "melted", "overheating", "caught fire", "flame", "flames", "smell of burning",
-    # Physical Injury
-    "injury", "injured", "bleed", "bleeding", "cut", "hospital", "doctor", "er", "burns", "stitches",
-    # Chemical / Health
-    "poison", "toxic", "rash", "allergic", "allergy", "infection",
-    # Legal / Regulatory
+THERMAL_KEYWORDS = {
+    "fire", "caught fire", "smoke", "smoking", "spark", "sparks", "blast", "blasting",
+    "exploded", "explosion", "burnt", "burning", "shock", "electric shock",
+    "melted", "melting", "overheating", "overheated", "flame", "flames", "smell of burning",
+}
+
+INJURY_KEYWORDS = {
+    "injury", "injured", "injuries", "bleed", "bleeding", "cut", "cuts",
+    "hospital", "doctor", "er", "burns", "burned", "stitches",
+}
+
+LEGAL_KEYWORDS = {
     "lawyer", "lawsuit", "court", "police", "fir", "consumer forum", "sue", "legal notice",
 }
 
-SAFETY_REGEX = re.compile(r"\b(" + "|".join(SAFETY_KEYWORDS) + r")\b", re.IGNORECASE)
+CHEMICAL_KEYWORDS = {
+    "poison", "toxic", "rash", "allergic", "allergy", "infection",
+}
+
+ALL_SAFETY_KEYWORDS = sorted(
+    THERMAL_KEYWORDS | INJURY_KEYWORDS | LEGAL_KEYWORDS | CHEMICAL_KEYWORDS,
+    key=len,
+    reverse=True,
+)
+
+SAFETY_REGEX = re.compile(r"\b(" + "|".join(re.escape(k) for k in ALL_SAFETY_KEYWORDS) + r")\b", re.IGNORECASE)
 
 
 class DualCategory(str):
@@ -89,16 +102,15 @@ def assess(review: Any, analysis: ReviewAnalysis | None = None, text: str | None
     matched_keywords = set(m.lower() for m in matches)
 
     # Classify category
-    is_raw = hasattr(review, "product") or (hasattr(review, "text") and not hasattr(review, "text_original"))
-    if any(k in matched_keywords for k in ("fire", "smoke", "blast", "exploded", "shock", "burnt", "melted")):
-        category = "fire_explosion" if is_raw else "safety_thermal_electrical"
+    if matched_keywords & THERMAL_KEYWORDS or any(k in text for k in ("fire", "smoke", "blast", "shock", "exploded", "burnt", "melted")):
+        category = DualCategory("safety_thermal_electrical")
         severity: Literal["high", "medium", "low"] = "high"
         urgency: Literal["high", "medium", "low"] = "high"
-    elif any(k in matched_keywords for k in ("hospital", "doctor", "bleed", "burns", "injury")):
+    elif matched_keywords & INJURY_KEYWORDS:
         category = "physical_injury"
         severity = "high"
         urgency = "high"
-    elif any(k in matched_keywords for k in ("lawyer", "lawsuit", "consumer forum", "court", "police")):
+    elif matched_keywords & LEGAL_KEYWORDS:
         category = "legal_regulatory"
         severity = "medium"
         urgency = "medium"
@@ -116,17 +128,17 @@ def assess(review: Any, analysis: ReviewAnalysis | None = None, text: str | None
     )
 
 
-def assess_serious_complaint(text: str) -> tuple[bool, str | None, str | None, str | None]:
+def assess_serious_complaint(text: str) -> tuple[bool, str, str, str]:
     """
     Evaluates text for critical safety hazards and urgency.
     Returns: (is_serious, category, severity, urgency)
     """
     if not text:
-        return False, None, None, None
+        return False, "", "", ""
     t_lower = text.lower()
     matches = SAFETY_REGEX.findall(t_lower)
     if not matches:
-        return False, None, None, None
+        return False, "", "", ""
     matched = set(m.lower() for m in matches)
     if any(k in matched for k in ("fire", "smoke", "blast", "exploded", "shock", "burnt", "caught fire")):
         return True, "thermal", "critical", "immediate"

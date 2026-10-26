@@ -9,6 +9,7 @@ Clean exports of PRISM Machine Learning and Vernacular NLP modules:
 - Translator (in-memory PII masking, Sarvam API, Gemini fallback)
 - AmbiguityScorer (6 heuristic ambiguity/sarcasm signals)
 - LLMClient (Gemini structured outputs & RAG question generator)
+- ImageProcessor & VideoProcessor (smart, cost-efficient multimodal extraction)
 - ModelEvaluator & TemperatureScaler
 """
 from ml.embeddings import EmbeddingProvider
@@ -18,6 +19,7 @@ from ml.hinglish_detector import HinglishDetector
 from ml.translator import Translator, mask_pii, restore_pii
 from ml.ambiguity import AmbiguityScorer
 from ml.llm_client import LLMClient
+from ml.multimodal import ImageProcessor, VideoProcessor, ProcessedMediaResult
 from ml.eval import ModelEvaluator, compute_classification_metrics, compute_expected_calibration_error
 from ml.calibrate import TemperatureScaler
 
@@ -31,6 +33,9 @@ __all__ = [
     "restore_pii",
     "AmbiguityScorer",
     "LLMClient",
+    "ImageProcessor",
+    "VideoProcessor",
+    "ProcessedMediaResult",
     "ModelEvaluator",
     "compute_classification_metrics",
     "compute_expected_calibration_error",

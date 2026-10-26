@@ -10,6 +10,7 @@ Exposes:
 from __future__ import annotations
 
 import hashlib
+import hmac
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -20,6 +21,38 @@ from prism_core.db.base import get_sessionmaker
 from prism_core.db.models import IssueCluster, Survey, SurveyResponse
 from prism_core.mail import send as send_email
 from prism_core.survey.generator import SurveyGenerator
+
+
+def generate_survey_token(survey_id: str, tenant_id: str, secret: str = "prism_secret_token_key") -> str:
+    """Generate an HMAC-signed tamper-proof survey token."""
+    payload = f"{survey_id}.{tenant_id}"
+    sig = hmac.new(secret.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256).hexdigest()[:16]
+    return f"{payload}.{sig}"
+
+
+def verify_survey_token(token: str, secret: str = "prism_secret_token_key") -> tuple[bool, str | None, str | None]:
+    """Verify HMAC-signed survey token. Returns (is_valid, survey_id, tenant_id)."""
+    if "." in token:
+        parts = token.split(".")
+        if len(parts) == 3:
+            survey_id, tenant_id, sig = parts
+            expected = hmac.new(secret.encode("utf-8"), f"{survey_id}.{tenant_id}".encode("utf-8"), hashlib.sha256).hexdigest()[:16]
+            if hmac.compare_digest(sig, expected):
+                return True, survey_id, tenant_id
+    try:
+        import base64
+        raw = base64.urlsafe_b64decode(token.encode("utf-8")).decode("utf-8")
+        parts = raw.split(":")
+        if len(parts) == 3:
+            survey_id, tenant_id, sig = parts
+            expected_sig = hmac.new(
+                secret.encode("utf-8"), f"{survey_id}:{tenant_id}".encode("utf-8"), hashlib.sha256
+            ).hexdigest()
+            if hmac.compare_digest(sig, expected_sig):
+                return True, survey_id, tenant_id
+    except Exception:
+        pass
+    return False, None, None
 
 
 async def plan(
@@ -167,38 +200,6 @@ async def ingest_reply(
             out = await _ingest(sess)
             await sess.commit()
             return out
-
-
-def generate_survey_token(survey_id: str, tenant_id: str, secret: str) -> str:
-    """Generates an HMAC-signed base64 token for survey authentication."""
-    import base64
-    import hmac
-
-    payload = f"{survey_id}:{tenant_id}"
-    sig = hmac.new(secret.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256).hexdigest()
-    raw = f"{payload}:{sig}"
-    return base64.urlsafe_b64encode(raw.encode("utf-8")).decode("utf-8")
-
-
-def verify_survey_token(token: str, secret: str) -> tuple[bool, str | None, str | None]:
-    """Verifies HMAC token integrity and returns (verified, survey_id, tenant_id)."""
-    import base64
-    import hmac
-
-    try:
-        raw = base64.urlsafe_b64decode(token.encode("utf-8")).decode("utf-8")
-        parts = raw.split(":")
-        if len(parts) != 3:
-            return False, None, None
-        survey_id, tenant_id, sig = parts
-        expected_sig = hmac.new(
-            secret.encode("utf-8"), f"{survey_id}:{tenant_id}".encode("utf-8"), hashlib.sha256
-        ).hexdigest()
-        if hmac.compare_digest(sig, expected_sig):
-            return True, survey_id, tenant_id
-        return False, None, None
-    except Exception:
-        return False, None, None
 
 
 class SurveyManager:
