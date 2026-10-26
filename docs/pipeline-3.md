@@ -62,13 +62,14 @@ Dashboards always display "with" and "without" quarantined reviews. Flagged revi
 ## P3. Understand (L3)
 
 ### 3a. Feature mapping
-- Split into sentences. Embed each sentence (multilingual, original or `text_en`).
-- For each sentence compute similarity to every feature anchor from the product's `feature_taxonomy`. Select features using a **relative margin** (similarity within a margin of the top anchor) plus a calibrated floor, up to 4 per sentence.
-- Merge with a keyword lexicon match (per language group) for features the embedding misses (this fixes the old "everything is battery" collapse).
-- Taxonomy is per product category (headphones, refrigerator, controller, monitor, plus seed generic: packaging, delivery, support, value). Not hardcoded to 7.
+- Split into sentences. Embed each sentence (`multilingual-e5-small` with `passage:` prefix).
+- For each sentence compute cosine similarity to company custom features (max 15 defined per product) and category anchors from `feature_taxonomy`. Select features using a **relative margin** (similarity within a margin of the top anchor) plus a calibrated floor, up to 4 per sentence.
+- Merge with a keyword lexicon match (per language group) for features the embedding misses.
+- Custom product features: companies can define up to 15 custom feature words/phrases per product (e.g. "ear cushion comfort", "fizz", "sugar level"), embedded zero-shot without model re-training.
+- Category seed taxonomies: headphones, refrigerator, controller, monitor, plus seed generic.
 
 ### 3b. Polarity per feature
-- Score the sentence that carries the feature (English-normalised text) with a sentiment model, adjusted by negation handling and the **rating prior**: converted rating `r' = (rating - 3) / 2` in [-1, 1] contributes a small prior.
+- Score the sentence that carries the feature with the full 7,500-word `vaderSentiment` analyzer augmented with the Indian e-commerce / Hinglish dictionary (`sentiment_lexicon.yaml`), adjusted by negation handling and the **rating prior**: converted rating `r' = (rating - 3) / 2` in [-1, 1]. Microsecond latency.
 - A rating-only review contributes no feature polarity (no text), only rating metrics.
 
 ### 3c. Sarcasm and ambiguity gate (cheap first, LLM second)
@@ -187,7 +188,7 @@ Recommendations come from a (feature × issue_type) action matrix in config; LLM
 ### Verification survey (long-running task)
 1. **Trigger:** issue confidence in the Monitor/Gather band, or a serious complaint, or manual trigger.
 2. **Targets:** affected reviewers who gave consent and an email (widget/extension/CSV capture it). No consent, no survey.
-3. **Draft:** LLM (structured output, masked context) writes 4 short diagnostic questions; category-based fallback questions if the LLM fails.
+3. **Draft:** RAG-grounded generator retrieves top 4 cluster customer verbatims + product technical specs from catalog (`products.specs`) + batch/firmware details; Gemini structured JSON prompt drafts 3 targeted diagnostic multiple-choice questions to isolate root cause; category-based fallback questions if LLM fails.
 4. **Send:** email module; signed expiring link to the survey page.
 5. **Wait:** the long-running task sleeps until a reply or expiry (default 7 days), with reminder at day 3.
 6. **Ingest reply:** LLM writes a 2-sentence summary; a rule maps answers to confirm/deny signals; `SurveyDelta` updates the issue confidence (for example 0.62 → 0.81) and emits `survey.reply`.
