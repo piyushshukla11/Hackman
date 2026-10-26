@@ -12,19 +12,18 @@
 _Replace this after every session._
 
 ```
-[2026-10-26] Integrated Senior Dev Lead improvements:
-             1. First-login role onboarding: user inputs custom title (e.g. "Senior QA Lead")
-                and selects personalized dashboard modules; 1-click persona quick switcher for judges.
-             2. Company custom features: tenants can define up to 15 custom features per product;
-                zero-shot semantic discovery via multilingual-e5-small.
-             3. ML upgrade: multilingual-e5-small (100+ Indic/global languages) + full 7,500-word
-                vaderSentiment augmented with Indian e-commerce & Hinglish dictionary in YAML.
-             4. Defect Concentration & Lead-Time Advantage with Click-to-Verify Audit Drawer
-                (statistical batch concentration p < 0.001 + direct unedited review proof).
-             5. Smart Multimodal Ingest: Audio STT + 3-Keyframe capture + selective vision gating.
-             6. RAG-based diagnostic email survey drafting (verbatims + product specs + batch context).
-             7. Zero-break single-account PROD co-location on Render with private networking.
-             Backend code not started yet — waiting for user green light.
+[2026-10-27] Completed MVP 1 (Gateway, Adapters, Rating Normalisation, Postgres):
+             1. Setup: pyproject.toml, Dockerfile (multilingual-e5-small bake), render.yaml Blueprint.
+             2. Config & Lexicons: settings.py, thresholds.yaml, sentiment_lexicon.yaml (250+ Hinglish/vernacular words).
+             3. Database: base.py (TenantMixin), 27 SQLAlchemy models, HNSW index on reviews.embedding,
+                unique idempotency key, Alembic initial migration 0001_initial_schema.
+             4. Repositories: BaseRepository with mandatory tenant_id enforcement across all 8 repo modules.
+             5. Schemas: Pydantic v2 schemas across all layers, including Multimodal MediaItem and Onboarding.
+             6. Auth & Catalog: deps.py, auth.py (onboarding + persona presets), catalog.py (custom features max 15).
+             7. L1 Ingest & Adapters: accept() with SHA-256 idempotency, SITE_A-SITE_F sim-site adapters,
+                ingest.py endpoints (adapter webhooks, public widget, extension batch, CSV/JSON file upload).
+             8. Tests: test_mvp1_gateway_and_db.py passing all checks.
+             Ready for MVP 2 (Trust Cascade G1-G6 & Language Normalisation).
 ```
 
 ---
@@ -115,54 +114,54 @@ backend/
 ## MVP 1 — Gateway, Adapters, Rating Normalisation, Postgres
 
 ### Setup
-- [ ] `pyproject.toml` — deps: fastapi, uvicorn, pydantic-settings, sqlalchemy[asyncio], asyncpg, alembic, pgvector, python-jose, passlib[bcrypt], httpx, python-multipart, vaderSentiment, onnxruntime, sentencepiece
-- [ ] `Dockerfile` — Python 3.12, ML deps and `multilingual-e5-small` weights baked into image
-- [ ] `render.yaml` — Blueprint: web service (prism-api), Postgres (prism-db), Workflows worker (prism-workflows)
-- [ ] `prism_core/config/settings.py` — env vars: DATABASE_URL, SECRET_KEY, SARVAM_KEY, GEMINI_KEY, MAIL_PROVIDER_KEY, SLACK_WEBHOOK, RENDER_API_KEY
-- [ ] `prism_core/config/thresholds.yaml` — all initial values from contracts.md §9
-- [ ] `prism_core/config/lexicons/sentiment_lexicon.yaml` — 250+ curated Indian e-commerce & Hinglish sentiment words
+- [x] `pyproject.toml` — deps: fastapi, uvicorn, pydantic-settings, sqlalchemy[asyncio], asyncpg, alembic, pgvector, python-jose, passlib[bcrypt], httpx, python-multipart, vaderSentiment, onnxruntime, sentencepiece
+- [x] `Dockerfile` — Python 3.12, ML deps and `multilingual-e5-small` weights baked into image
+- [x] `render.yaml` — Blueprint: web service (prism-api), Postgres (prism-db), Workflows worker (prism-workflows)
+- [x] `prism_core/config/settings.py` — env vars: DATABASE_URL, SECRET_KEY, SARVAM_KEY, GEMINI_KEY, MAIL_PROVIDER_KEY, SLACK_WEBHOOK, RENDER_API_KEY
+- [x] `prism_core/config/thresholds.yaml` — all initial values from contracts.md §9
+- [x] `prism_core/config/lexicons/sentiment_lexicon.yaml` — 250+ curated Indian e-commerce & Hinglish sentiment words
 
 ### Database
-- [ ] `prism_core/db/base.py` — async engine, session factory, declarative base
-- [ ] SQLAlchemy models for all tables: `users`, `products`, `product_versions`, `modifications`, `batches`, `feature_taxonomies`, `sources`, `source_health`, `raw_reviews`, `reviews`, `review_features`, `trust_gate_log`, `graph_edges`, `issue_clusters`, `cluster_members`, `metric_rollups`, `trend_points`, `serious_complaints`, `surveys`, `survey_responses`, `email_outbox`, `alerts`, `reports`, `pipeline_events`, `eval_runs`, `returns_series`
-- [ ] All tables carry `tenant_id` and `created_at` ← test must fail if any query omits `tenant_id`
-- [ ] HNSW index on `reviews.embedding` (cosine)
-- [ ] Unique index on `raw_reviews.idempotency_key`
-- [ ] Alembic initial migration
-- [ ] `prism_core/db/repositories/` — one helper per table group, all enforce `tenant_id`
+- [x] `prism_core/db/base.py` — async engine, session factory, declarative base
+- [x] SQLAlchemy models for all tables: `users`, `products`, `product_versions`, `modifications`, `batches`, `feature_taxonomies`, `sources`, `source_health`, `raw_reviews`, `reviews`, `review_features`, `trust_gate_log`, `graph_edges`, `issue_clusters`, `cluster_members`, `metric_rollups`, `trend_points`, `serious_complaints`, `surveys`, `survey_responses`, `email_outbox`, `alerts`, `reports`, `pipeline_events`, `eval_runs`, `returns_series`
+- [x] All tables carry `tenant_id` and `created_at` ← test must fail if any query omits `tenant_id`
+- [x] HNSW index on `reviews.embedding` (cosine)
+- [x] Unique index on `raw_reviews.idempotency_key`
+- [x] Alembic initial migration
+- [x] `prism_core/db/repositories/` — one helper per table group, all enforce `tenant_id`
 
 ### Schemas (`prism_core/schemas/`)
-- [ ] `RawReview` — full envelope with all nested models (`ProductRef`, `RatingPayload`, `AuthorPayload`, `OrderPayload`, `MediaItem`, `ContactPayload`, `ProvenancePayload`)
-- [ ] `NormalisedReview`
-- [ ] `TrustVerdict`, `GateResult`
-- [ ] `ReviewAnalysis`, `FeatureMention`, `BatchInference`, `SeriousAssessment`
-- [ ] `Cluster`, `TrendPoint`, `Comparison`, `ConfidenceBreakdown`
-- [ ] `SourceHealth`, `ProbeResult`
-- [ ] All output classes: `IssueCard`, `SeriousComplaint`, `Investigation`, `TrendIndex`, `HealthIndex`
+- [x] `RawReview` — full envelope with all nested models (`ProductRef`, `RatingPayload`, `AuthorPayload`, `OrderPayload`, `MediaItem`, `ContactPayload`, `ProvenancePayload`)
+- [x] `NormalisedReview`
+- [x] `TrustVerdict`, `GateResult`
+- [x] `ReviewAnalysis`, `FeatureMention`, `BatchInference`, `SeriousAssessment`
+- [x] `Cluster`, `TrendPoint`, `Comparison`, `ConfidenceBreakdown`
+- [x] `SourceHealth`, `ProbeResult`
+- [x] All output classes: `IssueCard`, `SeriousComplaint`, `Investigation`, `TrendIndex`, `HealthIndex`
 
 ### Auth & Role Onboarding
-- [ ] `api/deps.py` — `get_db()`, `get_current_user()`, `require_role()`, `get_tenant_id()`
-- [ ] `api/routers/auth.py`:
+- [x] `api/deps.py` — `get_db()`, `get_current_user()`, `require_role()`, `get_tenant_id()`
+- [x] `api/routers/auth.py`:
   - POST `/auth/register`, `/auth/login`, `/auth/logout`, GET `/auth/me` (includes `role_title`, `selected_views`, `has_completed_onboarding`)
   - POST `/auth/onboarding` (first-login role title + selective module view checkboxes)
   - PATCH `/auth/me/preferences` (update workspace visible views or demo persona preset)
   - POST `/keys`
-- [ ] Bcrypt password hashing; HttpOnly JWT cookie; 8 h expiry
-- [ ] Seed script creates demo users (no hardcoded credentials in app code)
-- [ ] `api/routers/catalog.py`:
+- [x] Bcrypt password hashing; HttpOnly JWT cookie; 8 h expiry
+- [x] Seed script creates demo users (no hardcoded credentials in app code)
+- [x] `api/routers/catalog.py`:
   - Products, Versions, Batches, Modifications CRUD
   - POST/GET `/v1/products/{id}/features` — Dynamic Company Custom Features (max 15 features; zero-shot `e5-small` embeddings + auto-anchor expansion)
 
 ### L1 Ingest — Gateway
-- [ ] `prism_core/schemas/raw_review.py` — `RawReview` envelope
-- [ ] `prism_core/ingest/__init__.py` — `accept(envelope: RawReview) -> RawID`
+- [x] `prism_core/schemas/raw_review.py` — `RawReview` envelope
+- [x] `prism_core/ingest/__init__.py` — `accept(envelope: RawReview) -> RawID`
   - Validate schema
   - Rating normalisation per adapter config (table in contracts.md §2)
   - Compute `idempotency_key` (two formulas)
   - Write to `raw_reviews`; duplicate key → no-op
   - Enqueue `process_review` Render Workflow task
-- [ ] `prism_core/ingest/sources.py` — `ReviewSource` protocol
-- [ ] `prism_core/ingest/adapters/` — 6 sim-site adapters (SITE_A to SITE_F)
+- [x] `prism_core/ingest/sources.py` — `ReviewSource` protocol
+- [x] `prism_core/ingest/adapters/` — 6 sim-site adapters (SITE_A to SITE_F)
   - SITE_A: REST cursor-paginated JSON, 5 integer stars, verified purchase + order dates
   - SITE_B: REST page/offset JSON, 5 half-stars, seller name + helpful votes
   - SITE_C: Webhook push, 5 integer stars, order id + warehouse code
@@ -171,7 +170,7 @@ backend/
   - SITE_F: Scheduled CSV drop, 5 integer stars, full export with dispatch dates
 
 ### API — Ingest routes
-- [ ] `api/routers/ingest.py`
+- [x] `api/routers/ingest.py`
   - POST `/v1/ingest/adapter/{source_id}` — webhook push
   - POST `/v1/ingest/widget` — public key + origin allowlist + rate limit
   - POST `/v1/ingest/extension` — user-scoped token
@@ -179,7 +178,7 @@ backend/
   - POST `/v1/ingest/email` — inbound email parse webhook
 
 ### API — Catalog routes
-- [ ] `api/routers/catalog.py` — full CRUD for `/v1/products`, versions, modifications, batches, sources
+- [x] `api/routers/catalog.py` — full CRUD for `/v1/products`, versions, modifications, batches, sources
 
 ---
 
