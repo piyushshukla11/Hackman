@@ -12,18 +12,36 @@
 _Replace this after every session._
 
 ```
-[2026-10-27] Completed MVP 1 (Gateway, Adapters, Rating Normalisation, Postgres):
-             1. Setup: pyproject.toml, Dockerfile (multilingual-e5-small bake), render.yaml Blueprint.
-             2. Config & Lexicons: settings.py, thresholds.yaml, sentiment_lexicon.yaml (250+ Hinglish/vernacular words).
-             3. Database: base.py (TenantMixin), 27 SQLAlchemy models, HNSW index on reviews.embedding,
-                unique idempotency key, Alembic initial migration 0001_initial_schema.
-             4. Repositories: BaseRepository with mandatory tenant_id enforcement across all 8 repo modules.
-             5. Schemas: Pydantic v2 schemas across all layers, including Multimodal MediaItem and Onboarding.
-             6. Auth & Catalog: deps.py, auth.py (onboarding + persona presets), catalog.py (custom features max 15).
-             7. L1 Ingest & Adapters: accept() with SHA-256 idempotency, SITE_A-SITE_F sim-site adapters,
-                ingest.py endpoints (adapter webhooks, public widget, extension batch, CSV/JSON file upload).
-             8. Tests: test_mvp1_gateway_and_db.py passing all checks.
-             Ready for MVP 2 (Trust Cascade G1-G6 & Language Normalisation).
+[2026-10-27] Completed Root Directory Separation & Full Stack Backend Suite:
+             1. Database Separation (`prism-new/db/`):
+                - db/base.py (Declarative Base, TenantMixin, Async Engine, Sessionmaker)
+                - db/models.py (All 27 SQLAlchemy multi-tenant models, HNSW vector indexing)
+                - db/repositories/ (Strict multi-tenancy: BaseRepository, users, catalog, ingest, reviews, graph, metrics, actions, events)
+                - db/alembic/ (alembic.ini, env.py, script.py.mako, 0001_initial_schema.py)
+             2. Machine Learning Separation (`prism-new/ml/`):
+                - ml/embeddings.py (intfloat/multilingual-e5-small, 384-d, ONNX int8, passage/query prefixing, L2 unit norm)
+                - ml/sentiment.py (Augmented VADER + 250+ word Indian e-commerce / Hinglish YAML lexicon + rating prior)
+                - ml/language_detector.py (Unicode codepoint script-block analysis for Indic languages)
+                - ml/hinglish_detector.py (Romanized Hindi function-word analyzer)
+                - ml/translator.py (In-memory PII masking + Sarvam Translate + Gemini fallback)
+                - ml/ambiguity.py (6-signal ambiguity & sarcasm scorer with confidence multipliers)
+                - ml/llm_client.py (Structured Gemini RAG diagnostic question drafting & offline fallbacks)
+                - ml/lexicons/sentiment_lexicon.yaml (Curated vernacular e-commerce dictionary)
+                - ml/eval.py & ml/calibrate.py (Classification metrics, ECE calculation, temperature scaling)
+             3. Backend Orchestration (`prism-new/backend/`):
+                - prism_core/ (Clean domain logic delegating to db/ and ml/ packages)
+                - api/ (FastAPI routers: auth, catalog, ingest, read, actions, ops, stream, privacy)
+                - workflows/ (Task runner and tasks: process_review, rebuild_product, source_health, survey_loop)
+             4. Tests (`prism-new/tests/`):
+                - test_mvp1_gateway_and_db.py
+                - test_mvp2_language_and_trust.py
+                - test_mvp3_understand.py
+                - test_mvp4_5_graph_and_confidence.py
+                - test_ml_package.py
+                - test_db_package.py
+                - test_mvp6_compare_and_health.py
+                - test_mvp7_rag_survey_and_action.py
+                - test_mvp8_workflows_and_api.py
 ```
 
 ---
@@ -49,65 +67,62 @@ _Replace this after every session._
 
 ---
 
-## Repo layout (`prism-new/backend/`)
+## Repo layout (`prism-new/`)
 
 ```
-backend/
-  prism_core/           # domain package — all business logic lives here
-    config/
-      thresholds.yaml   # all tunables; calibrated by scripts/calibrate.py
-      settings.py       # pydantic-settings env config
-    db/
-      base.py           # SQLAlchemy declarative base + engine
-      repositories/     # one repo helper per table group
-    schemas/            # shared Pydantic models (RawReview, NormalisedReview, …)
-    ingest/             # L1 — accept(), ReviewSource protocol, sources_health
-    language/           # L2 — normalise()
-    trust/              # L2 — score(), trust cascade G1-G6
-    extract/            # L3 — analyse(), feature mapping, sarcasm gate
-    serious/            # L3 — assess()
-    batch/              # L3 — infer(), batch ladder B0-B4
-    graph/              # L4 — rebuild(), edge weights, cluster classification
-    trend/              # L4 — roll_up(), EWMA/CUSUM
-    compare/            # L4 — run(), 5 lenses, statistics
-    confidence/         # L4 — score(), formula + parts
-    survey/             # L5 — plan(), send(), ingest_reply()
-    mail/               # L5 — send(), templates, outbox
-    report/             # L5 — build(), WeasyPrint PDF
-    events/             # shared — emit(), pipeline_events + NOTIFY
-    ml/                 # model wrappers (EmbeddingProvider, Translator, SentimentModel, LLMClient, ImageReader)
-  api/                  # FastAPI app (routes only — no business logic)
-    main.py
-    deps.py             # shared dependencies (DB session, current user, tenant)
-    routers/
-      auth.py
-      ingest.py
-      catalog.py
-      read.py
-      actions.py
-      ops.py
-      stream.py         # SSE endpoint
-      privacy.py
-  workflows/            # Render Workflows task definitions (thin wrappers over prism_core)
-    tasks/
-      ingest_pull.py
-      process_review.py
-      rebuild_product.py
-      survey_loop.py
-      trend_scan.py
-      weekly_digest.py
-      source_health.py
-      build_report.py
-  alembic/              # migrations
-  seeds/                # demo dataset generator + replay tool
-  scripts/
-    calibrate.py        # proposes threshold values from labelled seed data
-    eval.py             # eval harness
-  tests/                # pytest
-  Dockerfile
-  pyproject.toml
-  render.yaml           # Render Blueprint
-```
+prism-new/
+  db/                   # standalone database package (models, multi-tenant repos, Alembic)
+    base.py             # Declarative Base, TenantMixin, async engine, sessionmaker
+    models.py           # all 27 SQLAlchemy multi-tenant models
+    alembic.ini
+    alembic/
+      env.py
+      versions/0001_initial_schema.py
+    repositories/       # strict multi-tenancy repositories
+      base.py           # enforces tenant_id on every query
+      users.py, catalog.py, ingest.py, reviews.py, graph.py, metrics.py, actions.py, events.py
+  ml/                   # standalone machine learning & NLP package
+    embeddings.py       # intfloat/multilingual-e5-small, passage/query prefixes, unit norm
+    sentiment.py        # augmented VADER + Hinglish dictionary + rating prior
+    language_detector.py# Unicode script ranges for Indic languages
+    hinglish_detector.py# Romanized Hindi classification
+    translator.py       # in-memory PII masking + Sarvam Translate + Gemini fallback
+    ambiguity.py        # 6-signal ambiguity & sarcasm scorer
+    llm_client.py       # Gemini structured RAG question generator
+    eval.py             # accuracy, macro-F1, ECE evaluation
+    calibrate.py        # temperature scaling optimization
+    lexicons/
+      sentiment_lexicon.yaml # 250+ Hinglish/vernacular words
+  backend/              # backend API & pipeline orchestration
+    prism_core/         # domain logic orchestrating DB and ML
+      config/           # settings.py, thresholds.yaml
+      schemas/          # Pydantic v2 contracts
+      ingest/           # L1 — accept(), sim-site adapters SITE_A through SITE_F
+      language/         # L2 — normalise()
+      trust/            # L2 — score(), G1-G6 gates
+      extract/          # L3 — custom features (max 15), zero-shot cosine anchors
+      serious/          # L3 — safety/thermal/injury triage
+      batch/            # L3 — B0-B4 batch ladder
+      graph/            # L4 — connected components, defect concentration, lead time
+      trend/            # L4 — rollups, Wilson CI, spike detection
+      compare/          # L4 — 5 comparative lenses, two-proportion z-test, health score
+      confidence/       # L4 — F, D, C, T, E waterfall formula
+      survey/           # L5 — RAG diagnostic questions, HMAC tokens
+      mail/             # L5 — Jinja templates, outbox
+      report/           # L5 — executive HTML/PDF report builder
+      events/           # SSE emission + pipeline audit log
+    api/                # FastAPI application
+      main.py
+      deps.py
+      routers/ (auth, catalog, ingest, read, actions, ops, stream, privacy)
+    workflows/          # Render Workflows tasks (plain Python runner)
+      runner.py
+      tasks/ (process_review, rebuild_product, source_health, survey_loop)
+    Dockerfile
+    pyproject.toml
+    render.yaml
+  tests/                # comprehensive pytest test suite
+
 
 ---
 
