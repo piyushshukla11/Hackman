@@ -146,3 +146,27 @@ def test_temperature_scaling_and_calibration():
 
     ece = compute_expected_calibration_error(confidences, labels, n_bins=5)
     assert 0.0 <= ece <= 1.0
+
+
+def test_multimodal_processing():
+    import asyncio
+    from ml.multimodal import ImageProcessor, VideoProcessor
+
+    async def _run():
+        img_proc = ImageProcessor()
+        img_res = await img_proc.process_image()
+        assert img_res.media_type == "image"
+
+        video_proc = VideoProcessor()
+        video_res = await video_proc.process_video(duration_seconds=40.0)
+        assert video_res.media_type == "video"
+        assert len(video_res.keyframes) == 3
+        assert video_res.keyframes[0]["timestamp_sec"] == 10.0
+        assert video_res.keyframes[1]["timestamp_sec"] == 20.0
+        assert video_res.keyframes[2]["timestamp_sec"] == 30.0
+        assert "Customer demonstration video" in video_res.audio_transcript
+        assert "crack" in video_res.visual_tags
+
+    asyncio.run(_run())
+
+

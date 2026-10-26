@@ -37,10 +37,15 @@ class Settings(BaseSettings):
     gemini_key: SecretStr | None = None
     sarvam_key: SecretStr | None = None
 
-    # ── Mail provider (Resend/Postmark REST) ──────────────────────────────────────
+    # ── Mail provider (Resend, SMTP, Postmark) ───────────────────────────────────
+    mail_provider: str = "resend"  # "resend" | "smtp" | "postmark" | "simulated"
     mail_provider_key: SecretStr | None = None
     mail_from: str = "noreply@prism.app"
-    mail_provider: str = "resend"  # "resend" | "postmark"
+    smtp_host: str | None = None
+    smtp_port: int = 587
+    smtp_user: str | None = None
+    smtp_password: SecretStr | None = None
+    smtp_use_tls: bool = True
 
     # ── Slack webhook (serious alerts) ────────────────────────────────────────────
     slack_webhook: str | None = None

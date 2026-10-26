@@ -96,6 +96,7 @@ class SourceCreate(BaseModel):
 # Product Endpoints
 # ─────────────────────────────────────────────────────────────────────────────
 
+@router.get("/catalog/products")
 @router.get("/products")
 async def list_products(
     user: Annotated[User, Depends(get_current_user)],

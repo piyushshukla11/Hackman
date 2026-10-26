@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Install Python deps first (cached layer)
-COPY pyproject.toml .
+COPY backend/pyproject.toml ./pyproject.toml
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -e ".[dev]" 2>/dev/null || pip install --no-cache-dir -e .
 
@@ -26,8 +26,6 @@ RUN python - <<'EOF'
 from pathlib import Path
 import urllib.request, os, sys
 
-# Model: intfloat/multilingual-e5-small ONNX int8
-# Hugging Face Hub download via snapshot_download if available
 try:
     from huggingface_hub import snapshot_download
     snapshot_download(
@@ -42,8 +40,13 @@ except Exception as e:
     print("Model will be downloaded at first worker startup")
 EOF
 
+# Copy repository code (root context includes db/, ml/, backend/)
 COPY . .
+
+ENV PYTHONPATH="/app:/app/backend:${PYTHONPATH}"
+WORKDIR /app/backend
 
 # Default command: FastAPI API server
 # Override CMD in render.yaml for the Workflows worker
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+

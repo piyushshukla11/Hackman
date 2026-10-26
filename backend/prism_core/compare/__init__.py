@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from prism_core.db.base import get_sessionmaker
 from prism_core.db.models import MetricRollup
-from prism_core.schemas.diagnose import Comparison
+from prism_core.schemas.diagnose import Comparison, SliceRollup, SliceComparison
 from prism_core.schemas.ops import HealthIndex
 
 
@@ -50,6 +50,68 @@ def compute_health_score(
         open_issue_penalty=round(penalty_rate * 100.0, 1),
         open_issues_count=open_issue_count,
     )
+
+
+def two_proportion_z_test(
+    count1: int, nobs1: int, count2: int, nobs2: int, alpha: float = 0.05
+) -> tuple[float, float, bool]:
+    """
+    Two-proportion z-test for statistical significance.
+    Returns (z_stat, p_value, is_significant).
+    Enforces minimum sample size of 20 per side — returns p=1.0, is_sig=False if too small.
+    """
+    if nobs1 < 20 or nobs2 < 20:
+        return 0.0, 1.0, False
+
+    rate1 = count1 / nobs1
+    rate2 = count2 / nobs2
+    p_pool = (count1 + count2) / (nobs1 + nobs2)
+
+    se = math.sqrt(p_pool * (1.0 - p_pool) * ((1.0 / nobs1) + (1.0 / nobs2))) if 0 < p_pool < 1 else 0.01
+    z_stat = (rate1 - rate2) / se if se > 0 else 0.0
+    p_val = round(float(2 * (1.0 - stats.norm.cdf(abs(z_stat)))), 6)
+    return round(z_stat, 4), p_val, p_val < alpha
+
+
+class ComparisonEngine:
+    """
+    Stateless comparison engine for comparing two SliceRollups.
+    Uses two-proportion z-test to assess significance of defect rate delta.
+    """
+
+    def compare_slices(
+        self,
+        slice_a: SliceRollup,
+        slice_b: SliceRollup,
+        feature: str = "",
+    ) -> SliceComparison:
+        """
+        Compare neg_rate between two slices.
+        Returns SliceComparison with delta, p_value, z_stat, significance verdict.
+        """
+        z_stat, p_val, is_sig = two_proportion_z_test(
+            count1=slice_a.n_neg, nobs1=slice_a.n_reviews,
+            count2=slice_b.n_neg, nobs2=slice_b.n_reviews,
+        )
+        delta = round(slice_b.neg_rate - slice_a.neg_rate, 4)
+
+        if not is_sig:
+            verdict: Literal["worse", "better", "no_change", "insufficient_data"] = "no_change"
+        elif delta > 0:
+            verdict = "worse"
+        else:
+            verdict = "better"
+
+        return SliceComparison(
+            feature=feature,
+            slice_a=slice_a.slice_key,
+            slice_b=slice_b.slice_key,
+            delta_neg_rate=delta,
+            p_value=p_val,
+            z_stat=z_stat,
+            is_significant=is_sig,
+            verdict=verdict,
+        )
 
 
 async def run(

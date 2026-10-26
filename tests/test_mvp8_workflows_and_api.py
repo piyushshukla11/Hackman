@@ -18,17 +18,17 @@ from workflows.runner import WorkflowRunner
 def test_api_route_registration():
     client = TestClient(app)
 
-    # Health check
-    res_health = client.get("/ops/healthz")
+    # Health check (at /health on root app)
+    res_health = client.get("/health")
     assert res_health.status_code == 200
-    assert res_health.json()["status"] == "ok"
+    assert res_health.json()["status"] == "healthy"
 
-    # Ingestion gateway endpoint exists (401 without auth)
-    res_ingest = client.post("/ingest/reviews", json={})
+    # Ingestion gateway endpoint exists (401/422 without auth — route is registered)
+    res_ingest = client.post("/v1/ingest/reviews", json={})
     assert res_ingest.status_code in (401, 422)
 
     # Catalog endpoints exist
-    res_catalog = client.get("/catalog/products")
+    res_catalog = client.get("/v1/catalog/products")
     assert res_catalog.status_code == 401
 
 

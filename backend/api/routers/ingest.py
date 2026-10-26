@@ -135,13 +135,14 @@ async def widget_submit(
 # 3. Extension Batch Capture
 # ─────────────────────────────────────────────────────────────────────────────
 
+@router.post("/reviews")
 @router.post("/extension")
 async def extension_batch(
     payload: ExtensionBatchPayload,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    """Chrome extension batch submission, authenticated with user token."""
+    """Batch reviews submission or Chrome extension capture, authenticated with user token."""
     raw_ids = []
     for rev in payload.reviews:
         rev.tenant_id = user.tenant_id
