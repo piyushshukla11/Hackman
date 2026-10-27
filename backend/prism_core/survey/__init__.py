@@ -145,13 +145,14 @@ async def plan(
     trigger: str = "manual",
     tenant_id: str = "default",
     session: AsyncSession | None = None,
+    target_question_count: int = 7,
 ) -> tuple[Survey, str]:
     """
     RAG-Grounded Diagnostic Survey Planner:
     1. Validates trigger authorization (monitor/gather/manual).
     2. Retrieves customer verbatims from issue cluster members with tenant/product isolation.
     3. Retrieves product technical specs and dominant batch/version context.
-    4. Drafts exactly 3 root-cause diagnostic questions via Gemini prompt or category fallback.
+    4. Drafts 6-7 root-cause diagnostic questions via Gemini prompt or category fallback.
     5. Validates grounding, evidence refs, and uncertainty options.
     6. Issues canonical signed token with 7-day expiration.
     Returns: (survey_record, raw_token)
@@ -169,23 +170,29 @@ async def plan(
             issue_id=issue_id,
             tenant_id=tenant_id,
         )
+        context.target_question_count = target_question_count
 
         if not context.is_sufficient:
             if "not found" in (context.insufficient_reason or "").lower():
                 raise ValueError(f"Issue cluster {issue_id} not found")
             raise ValueError(f"Cannot generate survey: {context.insufficient_reason}")
 
-        # 2. Generate RAG-grounded diagnostic questions (guaranteed exactly 3 questions)
-        gen_result = await generator.generate_diagnostic_survey(context)
+        # 2. Generate RAG-grounded diagnostic questions (6-7 questions)
+        gen_result = await generator.generate_diagnostic_survey(context, target_count=target_question_count)
         if gen_result.status == "insufficient_evidence" or not gen_result.questions:
             raise ValueError(f"Cannot generate survey: {gen_result.fallback_reason or 'Insufficient evidence'}")
 
-        if len(gen_result.questions) != 3:
-            # Fall back to category templates to strictly ensure exactly 3 questions
-            fallback_qs = generator.get_category_fallback_questions(context.category, context.feature, context)
+        if len(gen_result.questions) < 3:
+            fallback_qs = generator.get_category_fallback_questions(
+                context.category, context.feature, context, limit=target_question_count
+            )
             questions_payload = [q.model_dump() for q in fallback_qs]
         else:
             questions_payload = [q.model_dump() for q in gen_result.questions]
+
+        # Attach RAG trace for inspection and transparency
+        if questions_payload and gen_result.rag_processing_trace:
+            questions_payload[0]["rag_processing_trace"] = gen_result.rag_processing_trace
 
         # 3. Review id for tracking
         rev_id = context.evidence_items[0].review_id if context.evidence_items else "rev_placeholder"

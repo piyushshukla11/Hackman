@@ -42,25 +42,33 @@ SURVEY_HTML_TEMPLATE = """
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PRISM Product Feedback</title>
+  <title>PRISM Engineering Diagnostic Survey</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; justify-content: center; }
-    .container { max-width: 540px; width: 100%; background: #1e293b; border-radius: 12px; padding: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; }
-    h2 { color: #38bdf8; margin-top: 0; font-size: 20px; }
-    p { color: #94a3b8; font-size: 14px; line-height: 1.5; }
-    .question { margin: 24px 0; background: #0f172a; padding: 16px; border-radius: 8px; border: 1px solid #334155; }
-    .question-title { font-weight: 600; color: #e2e8f0; margin-bottom: 12px; font-size: 15px; }
-    label { display: block; margin: 10px 0; cursor: pointer; color: #cbd5e1; font-size: 14px; }
-    input[type="radio"] { margin-right: 10px; accent-color: #38bdf8; }
-    button { width: 100%; background: #0284c7; color: white; padding: 14px; border: none; border-radius: 8px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 20px; transition: background 0.2s; }
-    button:hover { background: #0369a1; }
-    .footer { text-align: center; font-size: 12px; color: #64748b; margin-top: 20px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0b0f19; color: #f8fafc; margin: 0; padding: 24px 16px; display: flex; justify-content: center; }
+    .container { max-width: 620px; width: 100%; background: #131927; border-radius: 14px; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid #1e293b; }
+    .rag-status { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: #38bdf8; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25); padding: 5px 12px; border-radius: 20px; margin-bottom: 16px; }
+    .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px #38bdf8; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+    h2 { color: #ffffff; margin-top: 0; font-size: 22px; font-weight: 700; }
+    p.subtitle { color: #94a3b8; font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+    .question { margin: 20px 0; background: #0b0f19; padding: 20px; border-radius: 10px; border: 1px solid #1e293b; transition: border-color 0.2s; }
+    .question:hover { border-color: #334155; }
+    .question-title { font-weight: 600; color: #f1f5f9; margin-bottom: 14px; font-size: 15px; line-height: 1.4; }
+    label { display: flex; align-items: flex-start; margin: 10px 0; cursor: pointer; color: #cbd5e1; font-size: 14px; line-height: 1.4; padding: 6px 10px; border-radius: 6px; transition: background 0.15s; }
+    label:hover { background: rgba(255,255,255,0.03); color: #ffffff; }
+    input[type="radio"] { margin-right: 12px; margin-top: 3px; accent-color: #38bdf8; }
+    .rag-citation { margin-top: 14px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.08); font-size: 11px; color: #64748b; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .rag-citation strong { color: #94a3b8; }
+    button { width: 100%; background: #0284c7; color: white; padding: 15px; border: none; border-radius: 8px; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 24px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
+    button:hover { background: #0369a1; transform: translateY(-1px); }
+    .footer { text-align: center; font-size: 12px; color: #475569; margin-top: 24px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Product Diagnostic Diagnostic</h2>
-    <p>Please take 60 seconds to answer 3 targeted questions to help our engineering team troubleshoot your reported issue.</p>
+    <div class="rag-status"><span class="pulse-dot"></span> PRISM RAG Engine Active &bull; Simulation Memory Ingested</div>
+    <h2>Root-Cause Diagnostic Survey</h2>
+    <p class="subtitle">Our diagnostic model formulated these targeted questions based on product technical specifications and cross-channel feedback (Amazon, Flipkart, JioMart, Brand Store, and Steam).</p>
     <form method="POST" action="/v1/survey/{{ token }}">
       {% for q in questions %}
       <div class="question">
@@ -68,14 +76,20 @@ SURVEY_HTML_TEMPLATE = """
         {% for opt in q.options %}
         <label>
           <input type="radio" name="ans_{{ q.question_id }}" value="{{ opt }}" required>
-          {{ opt }}
+          <span>{{ opt }}</span>
         </label>
         {% endfor %}
+        <div class="rag-citation">
+          <strong>GROUNDED CITATION:</strong> {{ q.evidence_refs|join(', ') if q.evidence_refs else (q.grounded_data_source or 'Hardware Spec Baseline') }}
+          {% if q.processing_note %}
+          <br><strong>PROCESSING TRACE:</strong> {{ q.processing_note }}
+          {% endif %}
+        </div>
       </div>
       {% endfor %}
-      <button type="submit">Submit Feedback</button>
+      <button type="submit">Submit Diagnostic Responses</button>
     </form>
-    <div class="footer">Secure PRISM Verification Link</div>
+    <div class="footer">PRISM Closed-Loop Verification &bull; HMAC Secured &bull; 7-Day Validity</div>
   </div>
 </body>
 </html>
@@ -89,8 +103,8 @@ async def trigger_investigation_survey(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    """Trigger a RAG diagnostic survey for an issue and send email invite."""
-    survey, raw_token = await plan(issue_id=issue_id, tenant_id=user.tenant_id, session=db)
+    """Trigger a RAG diagnostic survey for an issue and send email invite with 6-7 questions."""
+    survey, raw_token = await plan(issue_id=issue_id, tenant_id=user.tenant_id, session=db, target_question_count=7)
     await send_survey_invite(
         survey=survey,
         raw_token=raw_token,
@@ -99,13 +113,25 @@ async def trigger_investigation_survey(
         tenant_id=user.tenant_id,
         session=db,
     )
+    rag_trace = {}
+    if survey.questions and isinstance(survey.questions[0], dict):
+        rag_trace = survey.questions[0].get("rag_processing_trace", {})
+
     return {
         "status": "survey_dispatched",
         "survey_id": survey.id,
         "issue_id": issue_id,
         "token": raw_token,
         "expires_at": survey.expires_at.isoformat(),
+        "total_questions": len(survey.questions or []),
+        "rag_memory_used": {
+            "source": "rag_simulation_memory.json",
+            "platforms_consulted": ["amazon", "flipkart", "jiomart", "brand", "steam"],
+            "trace": rag_trace,
+        },
+        "questions": survey.questions,
     }
+
 
 
 @router.get("/survey/{token}", response_class=HTMLResponse)

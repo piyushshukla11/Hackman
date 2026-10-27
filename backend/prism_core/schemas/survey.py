@@ -34,6 +34,9 @@ class SurveyRetrievalContext(BaseModel):
     version_label: str | None = None
     is_sufficient: bool = True
     insufficient_reason: str | None = None
+    target_question_count: int = Field(default=3, description="Target number of diagnostic questions to generate (default 3, 6-7 when requested)")
+    rag_memory_trace: dict[str, Any] = Field(default_factory=dict, description="Trace of simulation memory consulted")
+
 
 
 class SurveyQuestion(BaseModel):
@@ -53,6 +56,14 @@ class SurveyQuestion(BaseModel):
         default=False,
         description="True if generated from category-calibrated fallback template",
     )
+    processing_note: str = Field(
+        default="",
+        description="Trace of how simulation memory or engineering spec was evaluated",
+    )
+    grounded_data_source: str = Field(
+        default="",
+        description="Simulation platform, review ID, or hardware spec key grounding this question",
+    )
 
 
 class SurveyGenerationResult(BaseModel):
@@ -62,3 +73,8 @@ class SurveyGenerationResult(BaseModel):
     evidence_context: list[RetrievedEvidence] = Field(default_factory=list)
     fallback_reason: str | None = None
     is_fallback: bool = False
+    rag_processing_trace: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Execution trace detailing simulation memory chunks, specs, and clusters utilized",
+    )
+
