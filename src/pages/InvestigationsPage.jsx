@@ -258,13 +258,31 @@ export default function InvestigationsPage({ selectedProduct = 'prod_001' }) {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <a
+            href={`http://localhost:5000/api/survey/gdoc/${surveyData?.survey_id || '74bd1c9e-8f70-48cc-b381-dd4acafa3d77'}`}
+            target="_blank"
+            rel="noreferrer"
+            className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white transition flex items-center gap-1.5 shadow-sm"
+          >
+            <span>📄</span>
+            <span>Open Google Docs Survey</span>
+          </a>
+          <a
+            href={`http://localhost:5000/api/survey/${surveyData?.survey_id || '74bd1c9e-8f70-48cc-b381-dd4acafa3d77'}`}
+            target="_blank"
+            rel="noreferrer"
+            className="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-200 border border-zinc-700 transition flex items-center gap-1.5"
+          >
+            <span>🌐</span>
+            <span>Web Form View</span>
+          </a>
           <button
             onClick={() => setShowTraceModal(!showTraceModal)}
             className="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-200 border border-zinc-700 transition flex items-center gap-2"
           >
             <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
-            {showTraceModal ? 'Hide Processing Trace' : 'Inspect RAG Processing Trace'}
+            {showTraceModal ? 'Hide Trace' : 'Inspect RAG Trace'}
           </button>
         </div>
       </div>
