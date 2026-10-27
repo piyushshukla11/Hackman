@@ -1,0 +1,302 @@
+{
+  "categories": {
+    "headphones": {
+      "sound_quality": {
+        "anchors": [
+          "audio quality, clarity, bass, treble, soundstage, crisp highs",
+          "sound quality, balanced sound, distortion at high volume, loud and clear",
+          "awaz, bass sound, volume, sound quality mast hai"
+        ],
+        "keywords": ["sound", "audio", "bass", "treble", "vocals", "clarity", "distortion", "volume", "muffled", "loud", "awaz", "sur", "dhun"]
+      },
+      "battery_life": {
+        "anchors": [
+          "battery life, play time, charging case capacity, battery backup",
+          "battery drain, fast charging, hours on single charge, battery dies quickly",
+          "battery backup, charging time, kitna ghanta chalta hai"
+        ],
+        "keywords": ["battery", "charge", "charging", "backup", "drain", "mah", "runtime", "hours", "dies", "usb-c", "backup", "charger"]
+      },
+      "comfort_fit": {
+        "anchors": [
+          "comfort in ears, snug fit, lightweight, ear tips sizing, hurts ears",
+          "wear for long hours, ear pain, falling out while running",
+          "kaan me dard, fitting acchi hai, comfort"
+        ],
+        "keywords": ["comfort", "fit", "pain", "ear tip", "ears", "lightweight", "heavy", "falling", "tight", "loose", "kaan"]
+      },
+      "noise_cancellation": {
+        "anchors": [
+          "active noise cancellation, anc, transparency mode, ambient noise filtering",
+          "blocks outside noise, background noise reduction, wind noise",
+          "bahar ki awaz, noise cancellation band"
+        ],
+        "keywords": ["anc", "noise cancellation", "transparency", "ambient", "background noise", "wind", "isolation"]
+      },
+      "build_quality": {
+        "anchors": [
+          "build quality, plastic hinge, durable case, feels premium, flimsy hinge",
+          "sturdy materials, scratch resistant, broken bud",
+          "plastic quality, tut gaya, majboot"
+        ],
+        "keywords": ["build", "quality", "hinge", "plastic", "metal", "sturdy", "flimsy", "fragile", "durable", "premium", "tut"]
+      },
+      "connectivity": {
+        "anchors": [
+          "bluetooth pairing, connectivity drops, latency, connection range",
+          "drops connection, pairs instantly, audio lag in games",
+          "bluetooth connect nahi ho raha, disconnect hota hai"
+        ],
+        "keywords": ["bluetooth", "pair", "pairing", "connect", "disconnect", "range", "latency", "sync", "drop", "lag"]
+      },
+      "microphone": {
+        "anchors": [
+          "microphone quality on calls, voice clarity, background noise on call",
+          "muffled mic, call quality, other person cannot hear me",
+          "call pe awaz nahi ja rahi, mic bakwas"
+        ],
+        "keywords": ["mic", "microphone", "call", "calls", "voice", "calling", "speak", "hear me"]
+      },
+      "packaging": {
+        "anchors": [
+          "packaging quality, box condition on arrival, sealed box, damaged parcel",
+          "crushed carton, torn packaging, unboxing experience",
+          "dabba phata hua, packaging kharab, box damaged"
+        ],
+        "keywords": ["package", "packaging", "box", "carton", "unboxing", "sealed", "crushed", "dented", "torn", "dabba", "tampered"]
+      },
+      "value_for_money": {
+        "anchors": [
+          "value for money, worth the price, affordable, overpriced for features",
+          "great deal, budget friendly, waste of money",
+          "paisa vasool, mehnga, kimat ke hisab se sahi"
+        ],
+        "keywords": ["price", "worth", "value", "money", "affordable", "cost", "cheap", "expensive", "deal", "paisa vasool", "mehnga"]
+      }
+    },
+    "refrigerator": {
+      "cooling_performance": {
+        "anchors": [
+          "cooling performance, temperature regulation, ice making speed, uneven cooling",
+          "not cooling properly, freezer ice buildup, spoilage",
+          "thanda nahi kar raha, cooling kam hai, barf nahi jamti"
+        ],
+        "keywords": ["cooling", "cool", "temperature", "freeze", "freezer", "ice", "frost", "chill", "cold", "spoilage", "thanda", "barf"]
+      },
+      "storage_capacity": {
+        "anchors": [
+          "storage space, shelf layout, vegetable tray capacity, door bottle racks",
+          "spacious interior, bottle holder size, capacity",
+          "jagah kam hai, space, badiya storage"
+        ],
+        "keywords": ["storage", "space", "capacity", "shelf", "shelves", "tray", "rack", "litres", "roomy", "jagah"]
+      },
+      "noise_level": {
+        "anchors": [
+          "compressor noise, quiet operation, humming sound, loud vibration",
+          "silent cooling, strange clicking noise, vibrating",
+          "awaz karta hai, compressor awaz, shanti"
+        ],
+        "keywords": ["noise", "sound", "humming", "loud", "silent", "quiet", "vibration", "rattle", "awaz"]
+      },
+      "energy_efficiency": {
+        "anchors": [
+          "power consumption, electricity bill, star rating efficiency, inverter compressor",
+          "energy saving, low electricity usage",
+          "bijli ka bill, power consumption"
+        ],
+        "keywords": ["energy", "power", "electricity", "bill", "inverter", "star rating", "consumption", "bijli"]
+      },
+      "build_quality": {
+        "anchors": [
+          "door handle build, tempered glass shelves, body paint, gasket seal",
+          "sturdy shelves, door seal leakage, dent on body",
+          "door gasket kharab, glass shelf tut gaya"
+        ],
+        "keywords": ["build", "body", "door", "handle", "shelf", "glass", "gasket", "seal", "dent", "scratch", "leakage"]
+      },
+      "customer_support": {
+        "anchors": [
+          "installation technician, after sales service, warranty claim, technician visit",
+          "quick installation, rude service center, warranty repair",
+          "technician nahi aaya, service kharab"
+        ],
+        "keywords": ["installation", "technician", "service", "support", "warranty", "engineer", "demo"]
+      },
+      "packaging": {
+        "anchors": [
+          "delivery packing, wooden crate, transit damage, dented on arrival",
+          "packaging carton, protected delivery",
+          "packing phati hui, dent aaya delivery me"
+        ],
+        "keywords": ["package", "packaging", "packing", "crate", "box", "transit", "damage", "dent", "delivery"]
+      }
+    },
+    "controller": {
+      "stick_drift_responsiveness": {
+        "anchors": [
+          "stick drift, thumbstick precision, analog stick deadzone, drifting issue",
+          "hall effect precision, smooth joystick, cursor drifting",
+          "stick drift ho raha, analog stick kharab"
+        ],
+        "keywords": ["drift", "stick drift", "thumbstick", "analog", "joystick", "deadzone", "precision", "accuracy"]
+      },
+      "button_triggers": {
+        "anchors": [
+          "trigger resistance, bumper click, mushy buttons, tactile feedback",
+          "stuck trigger button, responsive buttons, clicky d-pad",
+          "button dab nahi raha, trigger stuck"
+        ],
+        "keywords": ["button", "buttons", "trigger", "triggers", "bumper", "d-pad", "clicky", "mushy", "tactile", "stuck"]
+      },
+      "ergonomics_grip": {
+        "anchors": [
+          "comfortable grip, hand fatigue, texture, lightweight controller",
+          "ergonomic feel, slippery grip, fits comfortably in hands",
+          "pakadne me comfortable, grip acchi hai"
+        ],
+        "keywords": ["grip", "ergonomics", "fatigue", "hands", "feel", "weight", "texture", "hold"]
+      },
+      "battery_life": {
+        "anchors": [
+          "battery life, wireless gameplay hours, rechargeable battery, rapid drain",
+          "lasts through long gaming sessions, charging cable",
+          "battery jaldi khatam, charge"
+        ],
+        "keywords": ["battery", "charge", "charging", "runtime", "wireless", "hours", "cable"]
+      },
+      "connectivity_latency": {
+        "anchors": [
+          "wireless latency, input lag, bluetooth connection, 2.4ghz dongle drops",
+          "zero lag, instant response, disconnected mid game",
+          "latency lag, connection drop ho gaya"
+        ],
+        "keywords": ["lag", "latency", "dongle", "bluetooth", "wireless", "wired", "input lag", "disconnect"]
+      },
+      "build_quality": {
+        "anchors": [
+          "build durability, shell plastic, creaking body, solid feel",
+          "sturdy controller, dropped and broke",
+          "body majboot, plastic quality"
+        ],
+        "keywords": ["build", "durability", "plastic", "creaking", "sturdy", "solid", "durable"]
+      },
+      "value_for_money": {
+        "anchors": [
+          "value for money, budget gaming controller, worth the price",
+          "expensive for features, best in this price range",
+          "paisa vasool gaming, sasta aur accha"
+        ],
+        "keywords": ["price", "worth", "value", "money", "budget", "deal", "paisa vasool"]
+      }
+    },
+    "monitor": {
+      "display_quality_colors": {
+        "anchors": [
+          "color accuracy, panel contrast, black levels, backlight bleed, dead pixels",
+          "vibrant ips display, color reproduction, ips glow",
+          "color mast hai, display kharab, dead pixel"
+        ],
+        "keywords": ["display", "screen", "panel", "color", "colors", "contrast", "ips", "oled", "bleed", "glow", "pixel", "dead pixel", "brightness"]
+      },
+      "refresh_rate_ghosting": {
+        "anchors": [
+          "high refresh rate, ghosting response time, motion blur, freesync gsync",
+          "smooth 144hz 165hz gaming, screen tearing, stutter",
+          "smooth refresh rate, lag, ghosting"
+        ],
+        "keywords": ["refresh rate", "hz", "144hz", "165hz", "240hz", "ghosting", "response time", "blur", "tearing", "freesync", "gsync", "smooth"]
+      },
+      "stand_adjustability": {
+        "anchors": [
+          "height adjustability, tilt swivel pivot stand, vesa mount support, wobbly stand",
+          "sturdy monitor arm, ergonomic height adjustment",
+          "stand wobbly hai, height adjustment"
+        ],
+        "keywords": ["stand", "vesa", "mount", "height", "tilt", "swivel", "pivot", "wobble", "adjust"]
+      },
+      "ports_connectivity": {
+        "anchors": [
+          "hdmi displayport connection, usb-c display delivery, audio out port",
+          "multiple display inputs, port loose",
+          "port kaam nahi kar raha, hdmi dp"
+        ],
+        "keywords": ["hdmi", "displayport", "dp", "usb-c", "type-c", "ports", "connectivity", "cable"]
+      },
+      "build_quality": {
+        "anchors": [
+          "bezel design, plastic housing, sturdy frame, premium aesthetics",
+          "thin bezels, creaky plastic",
+          "build acchi hai, frame solid"
+        ],
+        "keywords": ["build", "bezel", "bezels", "frame", "plastic", "housing", "durability"]
+      },
+      "packaging": {
+        "anchors": [
+          "monitor box packaging, styrofoam protection, cracked screen on delivery",
+          "safely packaged in foam, unboxing",
+          "screen tooti hui nikli, packing kharab"
+        ],
+        "keywords": ["package", "packaging", "box", "styrofoam", "cracked", "broken screen", "delivery damage"]
+      },
+      "value_for_money": {
+        "anchors": [
+          "value for money, budget gaming monitor, worth every rupee",
+          "price to performance, great budget display",
+          "paisa vasool monitor, sasta"
+        ],
+        "keywords": ["price", "value", "worth", "money", "budget", "paisa vasool"]
+      }
+    },
+    "generic": {
+      "packaging": {
+        "anchors": [
+          "packaging box condition, bubble wrap, sealed carton, crushed in transit",
+          "damaged box on arrival, unboxing experience",
+          "dabba phata hua, packaging kharab, box damaged"
+        ],
+        "keywords": ["package", "packaging", "box", "carton", "unboxing", "sealed", "crushed", "dented", "torn", "dabba", "tampered"]
+      },
+      "delivery_speed": {
+        "anchors": [
+          "delivery speed, fast shipping, arrived late, courier delay",
+          "delivered on time, delivery partner experience",
+          "delivery late hui, jaldi deliver hua"
+        ],
+        "keywords": ["deliver", "delivery", "shipping", "shipped", "courier", "late", "fast delivery", "delayed", "on time"]
+      },
+      "customer_support": {
+        "anchors": [
+          "customer service, refund process, replacement request, warranty claim",
+          "helpful support executive, unhelpful service center",
+          "customer care bakwas, refund nahi mila"
+        ],
+        "keywords": ["support", "service", "customer care", "warranty", "refund", "replacement", "helpline", "executive"]
+      },
+      "value_for_money": {
+        "anchors": [
+          "value for money, worth the price, affordable, overpriced product",
+          "great deal, budget friendly",
+          "paisa vasool, mehnga, kimat"
+        ],
+        "keywords": ["price", "worth", "value", "money", "affordable", "cost", "cheap", "expensive", "deal", "paisa vasool", "mehnga"]
+      },
+      "build_quality": {
+        "anchors": [
+          "build quality, materials used, durable construction, cheap flimsy feel",
+          "solid build, premium materials",
+          "majboot hai, tut gaya, plastic kharab"
+        ],
+        "keywords": ["build", "quality", "material", "durability", "sturdy", "flimsy", "solid", "cheap", "premium"]
+      },
+      "product_performance": {
+        "anchors": [
+          "product performance, working as expected, defective piece, smooth operation",
+          "stopped working, high performance, reliable daily use",
+          "kaam nahi kar raha, badiya chal raha hai"
+        ],
+        "keywords": ["performance", "working", "works", "defective", "broken", "smooth", "reliable", "failed", "chal raha"]
+      }
+    }
+  }
+}

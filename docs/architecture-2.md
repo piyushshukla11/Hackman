@@ -71,8 +71,12 @@ Rules for agents: modules import only from `prism_core.schemas`, `prism_core.con
 
 All tables carry `tenant_id` and `created_at`.
 
+**Auth & Users**
+- `users(id, email, password_hash, role, role_title, selected_views jsonb, has_completed_onboarding, tenant_id, created_at)`
+- `api_keys(id, tenant_id, key_hash, name, role, revoked_at, created_at)`
+
 **Catalog**
-- `products(id, name, category, taxonomy_id)`
+- `products(id, name, category, taxonomy_id, custom_features jsonb, specs jsonb)`
 - `product_versions(id, product_id, label, effective_from, notes)`
 - `modifications(id, product_id, from_version, to_version, change_note, target_feature, target_issue_id?, effective_at)`
 - `batches(id, product_id, version_id, code, mfg_start, mfg_end, ship_start, ship_end, warehouse, notes)`
@@ -92,7 +96,7 @@ All tables carry `tenant_id` and `created_at`.
 
 **Diagnosis**
 - `graph_edges(src_review_id, dst_review_id, product_id, feature, weight)` (top-k per node)
-- `issue_clusters(id, product_id, feature, polarity, issue_type, severity, confidence, confidence_parts jsonb, first_seen, last_seen, size, channels jsonb, batches jsonb, versions jsonb, status)`
+- `issue_clusters(id, product_id, feature, polarity, issue_type, severity, confidence, confidence_parts jsonb, first_seen, last_seen, size, channels jsonb, batches jsonb, versions jsonb, defect_concentration, dominant_batch_id, p_value, lead_time_days, status)`
 - `cluster_members(cluster_id, review_id, role)`
 - `metric_rollups(product_id, version_id, batch_id, channel, feature, week, n_reviews, n_neg, n_pos, rating_w_sum, rating_w, rating_n_all, rating_sum_all)` (the single source the comparison engine reads)
 - `trend_points(product_id, feature, channel, window, n, neg_rate, neg_ci_low, neg_ci_high, rating_mean_trusted, rating_mean_all, pattern)`

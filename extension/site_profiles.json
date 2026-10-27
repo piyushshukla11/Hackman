@@ -1,0 +1,57 @@
+{
+  "profiles": [
+    {
+      "name": "Amazon",
+      "domains": ["amazon.in", "amazon.com", "amazon.co.uk", "amazon.de"],
+      "container": "[data-hook='review'], div.a-section.review",
+      "title": "[data-hook='review-title'] span:not(.a-icon-alt), .review-title",
+      "text": "[data-hook='review-body'] span, .review-text-content span",
+      "rating": "i[data-hook='review-star-rating'] span, i[data-hook='cmps-review-star-rating'] span, .a-icon-alt",
+      "author": "[data-hook='genome-widget'] .a-profile-name, .a-profile-name",
+      "date": "[data-hook='review-date'], .review-date",
+      "verified": "[data-hook='avp-badge'], .a-color-state",
+      "media": "img.review-image-tile, .review-image-tile-section img",
+      "sku": "#ASIN, input[name='ASIN']"
+    },
+    {
+      "name": "Flipkart",
+      "domains": ["flipkart.com"],
+      "container": "div._27M-vq, div.cPHDOP, div.col-12-12._1q8A8-",
+      "title": "p._2-N8zT, p.z9E0IG, div._2-N8zT",
+      "text": "div.ZmyHeo, div._1mXzrF, div.t-ZTKy",
+      "rating": "div._3LWZlK, div.XQDdHH",
+      "author": "p._2sc7ZR, p._2NsDsF",
+      "date": "p._2sc7ZR + p, div.row._2afbiS + div.row",
+      "verified": "span._2mcFHG, span.YQgRqV",
+      "media": "div._3uDziY img, div.d5G78e img",
+      "sku": "meta[itemprop='sku']"
+    },
+    {
+      "name": "PRISM Simulator Sites",
+      "domains": ["localhost", "127.0.0.1", "prism-sim", "prism.app"],
+      "container": ".review-card, .review-item, [data-review], .testimonial-card",
+      "title": ".review-title, h4.title, .comment-title",
+      "text": ".review-body, .review-text, p.comment, .content",
+      "rating": ".review-rating, [data-rating], .stars, .rating-badge",
+      "author": ".reviewer-name, .author, .customer-name",
+      "date": ".review-date, time, .timestamp",
+      "verified": ".verified-badge, .badge-verified",
+      "batch": ".batch-code, [data-batch], .lot-number",
+      "media": ".review-media img, .review-photos img, .attachment img",
+      "sku": "[data-sku], #product-sku, .sku-value"
+    },
+    {
+      "name": "Generic E-Commerce / Schema.org",
+      "domains": ["*"],
+      "container": "[itemtype*='Review'], .review, .review-entry, article.comment",
+      "title": "[itemprop='headline'], .review-heading, h3, h4",
+      "text": "[itemprop='reviewBody'], .review-content, .review-description, .entry-content",
+      "rating": "[itemprop='ratingValue'], .rating, .score, [data-score]",
+      "author": "[itemprop='author'], .author-name, .reviewer",
+      "date": "[itemprop='datePublished'], time, .published-date",
+      "verified": ".verified, .buyer-status",
+      "media": ".review-images img, .photos img",
+      "sku": "[itemprop='sku'], [data-product-id]"
+    }
+  ]
+}

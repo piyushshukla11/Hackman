@@ -1,0 +1,294 @@
+# ml/lexicons/sentiment_lexicon.yaml
+# Curated Indian E-Commerce, Vernacular, and Hinglish Lexicon for VADER Sentiment Augmentation
+# Values range from -4.0 (extremely negative) to +4.0 (extremely positive), standard VADER scale.
+
+lexicon:
+  # Highly Negative (-4.0 to -3.0)
+  bakwas: -3.8
+  ghatiya: -3.9
+  bekaar: -3.5
+  bekar: -3.5
+  chirkut: -3.0
+  dhoka: -3.8
+  dhokha: -3.8
+  fraud: -3.9
+  chor: -3.8
+  chori: -3.8
+  loot: -3.7
+  looted: -3.7
+  lootere: -3.9
+  scam: -3.9
+  scammed: -3.9
+  raddi: -3.6
+  kachra: -3.7
+  kachara: -3.7
+  tatti: -4.0
+  bogus: -3.4
+  pathetic: -3.5
+  thirdclass: -3.7
+  "third class": -3.7
+  duplicate: -3.6
+  "first copy": -3.5
+  nakli: -3.8
+  fake: -3.7
+  doppelganger: -3.0
+  defective: -3.4
+  doa: -3.8
+  "dead on arrival": -3.9
+  kharab: -3.4
+  kharaab: -3.4
+  totagaya: -3.5
+  toota: -3.3
+  futa: -3.3
+  phuta: -3.3
+  damage: -3.2
+  damaged: -3.4
+  damagedpiece: -3.5
+  "used product": -3.6
+  "purana maal": -3.7
+  "ghatiya quality": -3.9
+  "worst ever": -3.9
+  waste: -3.2
+  "waste of money": -3.8
+  "paisa barbad": -3.9
+  "paise barbad": -3.9
+  "barbaad": -3.7
+  "barbad": -3.7
+  ghapla: -3.5
+  chuna: -3.5
+  "chuna laga diya": -3.8
+  bewakoof: -3.3
+  ullu: -3.2
+  cheated: -3.7
+  horrible: -3.6
+  terrible: -3.6
+  useless: -3.4
+  disaster: -3.6
+  disastrous: -3.7
+  irritating: -3.1
+  dabba: -3.0
+  gadha: -3.0
+  "mat khareedo": -3.8
+  "dont buy": -3.8
+  "don't buy": -3.8
+  "never buy": -3.9
+  reject: -3.2
+  rejected: -3.3
+  refurbished: -2.8
+  faulty: -3.2
+  unusable: -3.6
+  regret: -3.3
+  regretted: -3.4
+  ashamed: -3.2
+  blunder: -3.5
+  horrendous: -3.8
+  disgusting: -3.8
+  chutiya: -4.0
+  chutiye: -4.0
+  harami: -4.0
+  "zero star": -3.8
+  "negative star": -3.9
+  hang: -2.8
+  laggy: -2.7
+  heating: -2.9
+  overheating: -3.3
+  blast: -3.9
+  spark: -3.8
+  shock: -3.7
+  smell: -2.5
+  stinking: -3.2
+  leaking: -3.3
+  leakage: -3.3
+  unhygienic: -3.6
+  dirty: -3.0
+  spoiled: -3.4
+  sada: -3.5
+  expired: -3.7
+  outdated: -3.0
+
+  # Moderate Negative (-2.9 to -1.0)
+  kamjor: -2.4
+  kamzor: -2.4
+  dhila: -2.1
+  dheela: -2.1
+  slow: -2.2
+  dheere: -2.0
+  cheap: -2.4
+  "cheap plastic": -2.9
+  halka: -2.0
+  hulka: -2.0
+  naazuk: -2.0
+  nazuk: -2.0
+  delicate: -1.8
+  substandard: -2.6
+  mediocre: -1.8
+  thanda: -1.5
+  manda: -1.8
+  dissatisfied: -2.5
+  unhappy: -2.4
+  naraz: -2.5
+  udaas: -2.0
+  mushkil: -1.8
+  dikkat: -2.3
+  pareshaan: -2.6
+  pareshani: -2.5
+  problem: -2.2
+  issue: -2.0
+  glitch: -2.1
+  buggy: -2.5
+  missing: -2.5
+  incomplete: -2.4
+  adhura: -2.3
+  delayed: -2.2
+  late: -2.0
+  der: -1.9
+  deri: -2.1
+  "bad packaging": -2.8
+  torn: -2.7
+  phata: -2.7
+  scratch: -2.3
+  scratched: -2.5
+  daag: -2.2
+  dhabba: -2.2
+  mismatch: -2.5
+  wrong: -2.6
+  galat: -2.8
+  different: -1.2
+  loose: -2.0
+  tight: -1.8
+  noisy: -2.2
+  loud: -1.9
+  uncomfortable: -2.6
+  dard: -2.3
+  painful: -2.5
+  dull: -1.8
+  fade: -2.2
+  faded: -2.4
+  shrinking: -2.4
+  colorbleed: -2.9
+  pungent: -2.3
+  rough: -2.0
+  blunt: -2.0
+
+  # Moderate Positive (+1.0 to +2.9)
+  theek: 1.5
+  thik: 1.5
+  chalta: 1.2
+  "chalta hai": 1.2
+  kaamchalau: 1.4
+  "kam chalau": 1.4
+  ok: 1.5
+  okay: 1.5
+  decent: 2.0
+  average: 1.1
+  satisfactory: 2.0
+  acceptable: 1.8
+  fit: 2.0
+  proper: 2.2
+  sahi: 2.2
+  shandar: 2.8
+  accha: 2.4
+  achha: 2.4
+  acha: 2.4
+  good: 2.3
+  nice: 2.2
+  pyara: 2.5
+  sundar: 2.6
+  khoobsurat: 2.7
+  clean: 2.2
+  saaf: 2.1
+  fresh: 2.4
+  taza: 2.2
+  crisp: 2.3
+  smooth: 2.5
+  soft: 2.4
+  mulayam: 2.4
+  comfortable: 2.6
+  aramdayak: 2.7
+  helpful: 2.3
+  fast: 2.4
+  tez: 2.2
+  quick: 2.3
+  prompt: 2.4
+  genuine: 2.8
+  original: 2.8
+  asli: 2.8
+  reliable: 2.7
+  bharosemand: 2.8
+  sturdy: 2.6
+  majboot: 2.7
+  solid: 2.7
+  durable: 2.8
+  tikau: 2.8
+  lightweight: 2.1
+  compact: 2.2
+  affordable: 2.4
+  sasta: 2.1
+  budget: 2.2
+  "pocket friendly": 2.6
+  worth: 2.5
+  worthy: 2.5
+  kaamgar: 2.4
+  useful: 2.4
+  smart: 2.5
+  cool: 2.4
+  stylish: 2.6
+
+  # Highly Positive (+3.0 to +4.0)
+  badiya: 3.4
+  badhiya: 3.5
+  zabardast: 3.8
+  jabardast: 3.8
+  mast: 3.6
+  faadu: 3.7
+  fadu: 3.7
+  dhansu: 3.8
+  dhaansu: 3.8
+  jhakaas: 3.9
+  jhakas: 3.9
+  kadak: 3.5
+  gazab: 3.7
+  lajawab: 3.8
+  lajawaab: 3.8
+  bemisaal: 3.8
+  shaandaar: 3.7
+  "ek number": 3.9
+  "number one": 3.8
+  "paisa vasool": 3.9
+  "paisa wasool": 3.9
+  "value for money": 3.7
+  "must buy": 3.8
+  recommend: 3.2
+  recommended: 3.4
+  "highly recommended": 3.9
+  superb: 3.6
+  outstanding: 3.8
+  phenomenal: 3.9
+  flawless: 3.9
+  perfect: 3.8
+  excellent: 3.7
+  brilliant: 3.7
+  amazing: 3.6
+  awesome: 3.6
+  fantastic: 3.7
+  marvelous: 3.8
+  unbeatable: 3.7
+  topnotch: 3.8
+  "top notch": 3.8
+  "top quality": 3.8
+  best: 3.6
+  "best in class": 3.8
+  "best ever": 3.9
+  delighted: 3.6
+  khush: 3.2
+  love: 3.5
+  loved: 3.6
+  impressive: 3.3
+  impressed: 3.4
+  hatsoff: 3.7
+  "hats off": 3.7
+  champion: 3.6
+  blessed: 3.4
+  wonder: 3.3
+  wonderful: 3.6
+  gem: 3.7

@@ -30,6 +30,12 @@
 | F24 | UI | Judge mode (real pipeline replay on seed data) | 8 |
 | F25 | UI | Prism Stream, X-ray, forensic timeline, waterfall, survey thread, compare view | 3 to 8 |
 | F26 | Platform | Auth, tenancy, roles, API keys, CI/CD, Render Blueprint | 1 and 8 |
+| F27 | Platform | **First-login role onboarding & selective module views** (custom title, tailored navigation, 1-click persona quick switcher) | 1 |
+| F28 | Understand | **Dynamic Company Custom Features** (max 15 features per product, any custom word, zero-shot matching via `e5-small`) | 1 and 3 |
+| F29 | Diagnose | **Defect Concentration & Lead-Time Advantage** with **Click-to-Verify Audit Drawer** (statistical batch clustering + unedited review proof) | 4 |
+| F30 | Act | **1-Click Engineering Ticket Exporter** (formatted Jira/Linear/Slack markdown & JSON) | 5 |
+| F31 | Ingest/Clean | **Smart Multimodal Ingestion** (Audio STT + 3-Keyframe extraction + selective vision gating for visual damage/OCR) | 1 and 3 |
+| F32 | Act | **RAG-based Diagnostic Survey Generator** (verbatims + product specs + batch context for root-cause isolation) | 6 |
 
 Role outputs (QA, ops, support, marketing, leadership) are lenses and digest templates over the same data, not separate pipelines.
 
@@ -37,11 +43,11 @@ Role outputs (QA, ops, support, marketing, leadership) are lenses and digest tem
 
 **Keep:** 7-stage shape, trust gate concepts, edge-weight idea, cluster classification idea, confidence formula terms, Gemini survey drafting with fallbacks, Sarvam translation, ambiguity multipliers (1.0/0.85/0.70/0.55).
 
-**Fix:** English-only embeddings → multilingual; word-list sentiment → model plus rating prior plus LLM second pass; static 7 features → per-category taxonomy; fixed "3 weeks, 4 nodes" rule → baseline and significance based; SQLite → Postgres + pgvector; in-memory cache → rollups table; Socket.io → SSE; hardcoded localhost → config; hardcoded credentials → seeded users; hardcoded catalog → catalog tables; flagged reviews dropped from ratings → trust-weighted rating.
+**Fix:** English-only embeddings → multilingual (`multilingual-e5-small`); word-list sentiment → full 7,500-word `vaderSentiment` augmented with Indian e-commerce / Hinglish dictionary + rating prior; static 7 features → dynamic company custom features (max 15) + per-category taxonomy; fixed "3 weeks, 4 nodes" rule → baseline and significance based; SQLite → Postgres + pgvector; in-memory cache → rollups table; Socket.io → SSE; hardcoded localhost → config; hardcoded credentials → seeded users; hardcoded catalog → catalog tables; flagged reviews dropped from ratings → trust-weighted rating.
 
 **Cut:** Vercel deployment, SQLite, Socket.io, Redis, mock fallbacks in UI, decorative WebGL backgrounds, duplicated product catalogs, html-pdf-node, four separate near-identical storefront mocks (replaced by 6 distinct placeholder sites that each exercise an adapter), human review queue (not in this build), evidence pack export, recommendation-closure tracking.
 
-**Add:** batch inference, serious-complaint queue, rating as signal, comparison engine, versions/modifications, widget and extension, source health, eval harness, tenancy, PII masking, role lenses, Judge mode, Render Workflows.
+**Add:** batch inference, serious-complaint queue, rating as signal, comparison engine, versions/modifications, widget and extension, source health, eval harness, tenancy, PII masking, role lenses, Judge mode, Render Workflows, first-login role onboarding, company custom features (max 15), defect concentration & lead-time advantage with audit drawer, 1-click Jira/Linear/Slack ticket generator, multimodal keyframe extraction, RAG diagnostic surveys.
 
 ## 3. Decision log
 

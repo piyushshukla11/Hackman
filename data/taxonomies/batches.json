@@ -1,0 +1,34 @@
+{
+  "batches": [
+    {
+      "id": "B-0716",
+      "code": "B-0716",
+      "product_id": "HP-NORD3",
+      "version_id": "v1.2",
+      "warehouse": "W2",
+      "ship_start": "2026-07-01",
+      "ship_end": "2026-07-20",
+      "notes": "Suspected packaging supplier lot"
+    },
+    {
+      "id": "B-0720",
+      "code": "B-0720",
+      "product_id": "HP-NORD3",
+      "version_id": "v1.2",
+      "warehouse": "W1",
+      "ship_start": "2026-07-15",
+      "ship_end": "2026-08-05",
+      "notes": "Standard production lot"
+    },
+    {
+      "id": "B-0801",
+      "code": "B-0801",
+      "product_id": "HP-NORD3",
+      "version_id": "v2.0",
+      "warehouse": "W2",
+      "ship_start": "2026-08-01",
+      "ship_end": "2026-08-25",
+      "notes": "Redesigned reinforced packaging"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+# prism_core/config/thresholds.yaml
+# Calibrated configuration tunables for PRISM intelligence pipeline.
+# No magic numbers in code — all thresholds, weights, and rules load from here.
+
+gates:
+  g1_min_words: 2
+  g3_near_dupe_threshold: 0.95
+  trust_clean_min: 0.70
+  trust_suspicious_min: 0.40
+
+weights:
+  # Trust calculation deltas
+  penalty_short: 0.10
+  penalty_exact_dupe: 0.90
+  penalty_near_dupe: 0.65
+  penalty_promo_link: 0.80
+  penalty_burst: 0.40
+  penalty_template: 0.50
+  provenance_verified_bonus: 0.15
+
+  # Feature extraction
+  feature_relative_margin: 0.04
+  feature_floor_sim: 0.38
+  max_features_per_sentence: 4
+  max_company_custom_features: 15
+
+  # Ambiguity multipliers
+  ambiguity_multipliers:
+    none: 1.00
+    vague: 0.85
+    rating_conflict: 0.75
+    mixed: 0.70
+    uncertain: 0.65
+    sarcasm: 0.55
+
+  # Graph edge weights
+  graph:
+    edge_threshold: 0.45
+    top_k_edges: 8
+    weight_semantic: 0.40
+    weight_time: 0.25
+    weight_batch: 0.25
+    weight_symptom: 0.10
+    time_window_days: 28
+
+  # Issue Classification
+  classification:
+    isolated_max_size: 2
+    batch_min_mentions: 4
+    batch_dominant_ratio: 0.70
+    batch_max_days: 21
+    batch_p_value_threshold: 0.01
+    systemic_min_batches: 3
+    systemic_min_weeks: 6
+    systemic_min_channels: 2
+    channel_dominant_ratio: 0.80
+
+  # Confidence Breakdown Formula
+  confidence:
+    weight_frequency: 0.25
+    weight_density: 0.20
+    weight_consistency: 0.20
+    weight_temporal: 0.15
+    weight_evidence: 0.20
+    act_threshold: 0.75
+    monitor_threshold: 0.45
+
+  # Trend and Comparison
+  compare:
+    min_sample_size: 20
+    spike_neg_rate_threshold: 0.60
+    spike_min_sample: 10
+    spike_debounce_days: 7
+
+  # Product Health Index
+  health_score:
+    weight_rating: 0.35
+    weight_sentiment: 0.45
+    weight_open_issue_penalty: 0.20
