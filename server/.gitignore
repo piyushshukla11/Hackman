@@ -1,0 +1,20 @@
+# Environment variables
+.env
+.env.*
+*.env
+!.env.example
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Local database
+*.sqlite
+*.sqlite-journal
+data/*.sqlite
+data/*.sqlite-journal
+
+# Logs & temp
+*.log
+.vercel
+.cache/
