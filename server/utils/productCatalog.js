@@ -1,15 +1,18 @@
 /**
- * Product display names for pipeline / surveys (matches simulation seed-data).
+ * Product display names for pipeline / surveys / dashboard (matches simulation seed-data).
  */
 const NAMES = {
-  prod_001: 'Paralink Nord 3 Pro',
-  prod_002: 'Paralink Refrigerator',
-  prod_003: 'Paralink Gamepad Pro',
-  prod_004: 'Paralink 25 Inch Monitor',
+  prod_001: 'Voyage Horizon ANC',
+  prod_002: 'Voyage StreamCast Pro',
+  prod_003: 'Voyage Apex Wireless',
+  prod_004: 'Voyage UltraVision 27"',
+  'prod-001': 'Voyage Horizon ANC',
+  steam_games: 'Voyage Steam Gaming Suite',
 };
 
 function getProductName(productId) {
-  return NAMES[productId] || productId.replace(/_/g, ' ');
+  if (!productId) return 'Voyage Product';
+  return NAMES[productId] || NAMES[productId.replace('-', '_')] || productId.replace(/_/g, ' ');
 }
 
 module.exports = { getProductName, NAMES };

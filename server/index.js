@@ -61,7 +61,16 @@ app.use('/api/settings', settingsRoutes);
 app.use('/reports', express.static(path.join(__dirname, 'reports')));
 
 // Serve simulation pages (HTML, CSS, JS)
-app.use('/simulation', express.static(path.join(__dirname, '..', 'simulation')));
+const simPaths = [
+  path.join(__dirname, 'public', 'simulation'),
+  path.join(__dirname, '..', '..', 'PRISM FRONTEND', 'simulation'),
+  path.join(__dirname, '..', 'simulation'),
+];
+for (const sp of simPaths) {
+  if (fs.existsSync(sp)) {
+    app.use('/simulation', express.static(sp));
+  }
+}
 
 // Health check
 app.get('/api/health', (req, res) => {

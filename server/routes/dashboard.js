@@ -14,7 +14,7 @@ const router = express.Router();
  * GET /api/dashboard/all
  * Returns leaderboard — cache-first, fallback to live computation.
  */
-router.get('/all', async (req, res) => {
+router.get(['/all', '/leaderboard'], async (req, res) => {
   try {
     // Try cache first
     const cached = getLeaderboardCache();

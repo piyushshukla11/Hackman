@@ -270,9 +270,10 @@ async function buildLeaderboard() {
     if (!byProduct[r.product_id]) byProduct[r.product_id] = [];
     byProduct[r.product_id].push(r);
   }
+  const { getProductName } = require('./productCatalog');
   return Object.entries(byProduct).map(([pid, prs]) => {
     const fs = computeFeatureSentiment(prs);
-    return { product_id: pid, name: pid.replace(/_/g, ' '), health_score: computeHealthScore(fs) };
+    return { product_id: pid, name: getProductName(pid), health_score: computeHealthScore(fs) };
   }).sort((a, b) => b.health_score - a.health_score);
 }
 
