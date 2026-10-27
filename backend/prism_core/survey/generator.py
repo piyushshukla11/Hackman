@@ -541,12 +541,15 @@ class SurveyGenerator:
             if len(unique_options) < 3:
                 return False, [], f"Question {idx} options count is under the minimum of 3."
 
-            # Validate evidence references
+            # Validate evidence references: must not be missing, invented, or invalid
             raw_refs = q_dict.get("evidence_refs", [])
             if isinstance(raw_refs, str):
                 raw_refs = [raw_refs]
             elif not isinstance(raw_refs, list):
                 raw_refs = []
+
+            if not raw_refs:
+                return False, [], f"Question {idx} is missing required evidence_refs."
 
             evidence_refs: list[str] = []
             for ref in raw_refs:
@@ -554,12 +557,15 @@ class SurveyGenerator:
                 # Check containment in valid context keys
                 if ref_str in valid_evidence_keys or any(ref_str in v for v in valid_evidence_keys):
                     evidence_refs.append(ref_str)
+                else:
+                    return False, [], f"Question {idx} cites ungrounded or invented evidence_ref: '{ref_str}'."
 
-            # If evidence_refs was omitted or filtered out, populate with matching evidence
-            if not evidence_refs and context.evidence_items:
-                evidence_refs = [e.review_id for e in context.evidence_items[:2]]
+            if not evidence_refs:
+                return False, [], f"Question {idx} has no valid grounded evidence references."
 
-            rationale = str(q_dict.get("rationale", "")).strip() or "Ground-truth failure mode diagnostic query."
+            rationale = str(q_dict.get("rationale", "")).strip()
+            if not rationale:
+                return False, [], f"Question {idx} is missing required engineering rationale."
 
             sanitized.append(
                 SurveyQuestion(
@@ -572,8 +578,9 @@ class SurveyGenerator:
                 )
             )
 
-        if len(sanitized) == 0:
-            return False, [], "No valid diagnostic questions could be extracted."
+        # Must have 1 to 3 valid questions
+        if not (1 <= len(sanitized) <= 3):
+            return False, [], f"Expected 1 to 3 valid diagnostic questions, got {len(sanitized)}."
 
         return True, sanitized, None
 
@@ -600,17 +607,27 @@ class SurveyGenerator:
 
         templates = CATEGORY_FALLBACK_TEMPLATES[cat_key]
         clean_feature = feature.replace("_", " ").title()
-        evidence_ids = [e.review_id for e in context.evidence_items] or ["cluster_evidence"]
 
         results: list[SurveyQuestion] = []
-        for t in templates:
+        for t in templates[:3]:
             q_text = t["question_text"].format(feature=clean_feature)
+            q_tokens = _clean_tokens(q_text)
+
+            # Only include review ID if that review specifically supports this question
+            supported_review_ids: list[str] = []
+            for e in context.evidence_items:
+                e_lower = e.text.lower()
+                # Review supports the fallback if it mentions the feature or has substantive token overlap
+                if feature.lower() in e_lower or len(q_tokens.intersection(_clean_tokens(e_lower))) >= 2:
+                    if e.review_id not in supported_review_ids:
+                        supported_review_ids.append(e.review_id)
+
             results.append(
                 SurveyQuestion(
                     question_id=t["question_id"],
                     question_text=q_text,
                     options=list(t["options"]),
-                    evidence_refs=evidence_ids[:3],
+                    evidence_refs=supported_review_ids,  # Empty if no review specifically supports this question
                     rationale=f"Category template ({cat_key}): {t['rationale']}",
                     is_fallback=True,
                 )
@@ -708,9 +725,9 @@ class SurveyGenerator:
                         content_part = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
                         parsed = json.loads(content_part)
 
-                        # Validate output against rules
+                        # Validate output against rules and ensure final count is exactly 3
                         is_valid, questions, val_err = self.validate_questions(parsed, context)
-                        if is_valid:
+                        if is_valid and len(questions) == 3:
                             return SurveyGenerationResult(
                                 status="success",
                                 questions=questions,
@@ -719,13 +736,14 @@ class SurveyGenerator:
                                 is_fallback=False,
                             )
                         else:
-                            logger.warning("Gemini output failed validation: %s. Falling back to templates.", val_err)
+                            reason = val_err if not is_valid else f"Gemini returned {len(questions)} valid questions, expected exactly 3."
+                            logger.warning("Gemini output failed validation: %s. Falling back to templates.", reason)
                             fallback_qs = self.get_category_fallback_questions(context.category, context.feature, context)
                             return SurveyGenerationResult(
                                 status="fallback",
                                 questions=fallback_qs,
                                 evidence_context=context.evidence_items,
-                                fallback_reason=f"Validation failure: {val_err}",
+                                fallback_reason=f"Validation failure: {reason}",
                                 is_fallback=True,
                             )
                 else:

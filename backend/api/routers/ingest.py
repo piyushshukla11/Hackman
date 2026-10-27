@@ -26,6 +26,7 @@ from prism_core.ingest import accept
 from prism_core.ingest.adapters import get_adapter
 from prism_core.schemas.raw_review import (
     AuthorPayload,
+    ContactPayload,
     MediaItem,
     OrderPayload,
     ProductRef,
@@ -110,6 +111,13 @@ async def widget_submit(
         for i, url in enumerate(payload.media_urls)
     ]
 
+    contact_info = None
+    if payload.author_email or payload.consent_followup:
+        contact_info = ContactPayload(
+            email=payload.author_email,
+            consent_followup=payload.consent_followup,
+        )
+
     envelope = RawReview(
         tenant_id=tenant_id,
         source_id="widget_direct",
@@ -120,6 +128,7 @@ async def widget_submit(
         text=payload.review_text,
         reviewed_at=datetime.now(timezone.utc),
         author=AuthorPayload(display_name=payload.author_name),
+        contact=contact_info,
         media=media_items,
         provenance=ProvenancePayload(
             user_agent=request.headers.get("user-agent"),
@@ -174,6 +183,13 @@ async def file_upload(
         items = data if isinstance(data, list) else [data]
         for d in items:
             rating_val = float(d.get("rating", 5.0))
+            contact_info = None
+            if d.get("email") or d.get("author_email") or d.get("consent_followup"):
+                contact_info = ContactPayload(
+                    email=d.get("email") or d.get("author_email"),
+                    phone=d.get("phone"),
+                    consent_followup=bool(d.get("consent_followup", False)),
+                )
             envelope = RawReview(
                 tenant_id=tenant_id,
                 source_id="file_upload_json",
@@ -185,6 +201,7 @@ async def file_upload(
                 text=d.get("text") or d.get("review_text"),
                 title=d.get("title"),
                 reviewed_at=datetime.fromisoformat(d.get("reviewed_at", datetime.now(timezone.utc).isoformat())),
+                contact=contact_info,
             )
             rid = await accept(envelope, session=db)
             raw_ids.append(rid)
@@ -194,6 +211,13 @@ async def file_upload(
         reader = csv.DictReader(text_stream)
         for row in reader:
             val = float(row.get("rating", 5.0))
+            contact_info = None
+            if row.get("email") or row.get("author_email") or row.get("consent_followup"):
+                contact_info = ContactPayload(
+                    email=row.get("email") or row.get("author_email"),
+                    phone=row.get("phone"),
+                    consent_followup=str(row.get("consent_followup", "")).strip().lower() in ("true", "1", "yes"),
+                )
             envelope = RawReview(
                 tenant_id=tenant_id,
                 source_id="file_upload_csv",
@@ -205,6 +229,7 @@ async def file_upload(
                 text=row.get("text") or row.get("review_text") or row.get("body"),
                 title=row.get("title"),
                 reviewed_at=datetime.now(timezone.utc),
+                contact=contact_info,
             )
             rid = await accept(envelope, session=db)
             raw_ids.append(rid)

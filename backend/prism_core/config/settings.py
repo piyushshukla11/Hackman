@@ -37,10 +37,18 @@ class Settings(BaseSettings):
     gemini_key: SecretStr | None = None
     sarvam_key: SecretStr | None = None
 
-    # ── Mail provider (Resend, SMTP, Postmark) ───────────────────────────────────
-    mail_provider: str = "resend"  # "resend" | "smtp" | "postmark" | "simulated"
+    # ── Mail provider (Gmail OAuth2, Resend, SMTP, Postmark, Simulated) ─────────
+    mail_provider: str = "simulated"  # "simulated" | "gmail" | "resend" | "smtp" | "postmark"
     mail_provider_key: SecretStr | None = None
     mail_from: str = "noreply@prism.app"
+
+    # Gmail OAuth 2.0 Credentials (app-level OAuth with refresh token)
+    gmail_client_id: SecretStr | None = None
+    gmail_client_secret: SecretStr | None = None
+    gmail_refresh_token: SecretStr | None = None
+    gmail_user_email: str | None = None  # Explicit sender address if different from mail_from
+
+    # Explicit SMTP alternative (Gmail App Password / custom relay)
     smtp_host: str | None = None
     smtp_port: int = 587
     smtp_user: str | None = None

@@ -19,9 +19,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.deps import get_current_user, get_db
+from prism_core.config.settings import get_settings
 from prism_core.db.models import Survey, User
 from prism_core.mail import send as send_mail
-from prism_core.survey import ingest_reply, plan, send_survey_invite
+from prism_core.survey import ingest_reply, plan, send_survey_invite, verify_survey_token
 
 router = APIRouter(prefix="/v1", tags=["Actions"])
 
@@ -110,12 +111,22 @@ async def trigger_investigation_survey(
 @router.get("/survey/{token}", response_class=HTMLResponse)
 async def get_survey_page(token: str, db: Annotated[AsyncSession, Depends(get_db)]):
     """Public tokenized diagnostic survey page (mobile-first HTML)."""
+    is_valid, srv_id, ten_id = verify_survey_token(token)
+    if not is_valid:
+        return HTMLResponse("<h2>Survey link is invalid or expired.</h2>", status_code=404)
+
     token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
-    stmt = select(Survey).where(Survey.token_hash == token_hash)
+    stmt = select(Survey).where(Survey.token_hash == token_hash, Survey.id == srv_id, Survey.tenant_id == ten_id)
     survey = (await db.execute(stmt)).scalar_one_or_none()
 
     if not survey:
         return HTMLResponse("<h2>Survey not found or link is invalid.</h2>", status_code=404)
+
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    expires_at = survey.expires_at.replace(tzinfo=timezone.utc) if survey.expires_at.tzinfo is None else survey.expires_at
+    if survey.status == "expired" or now > expires_at:
+        return HTMLResponse("<div style='text-align:center;padding:50px;font-family:sans-serif;'><h2>Survey Expired</h2><p>This diagnostic link is no longer active.</p></div>", status_code=410)
 
     if survey.status == "answered":
         return HTMLResponse("<div style='text-align:center;padding:50px;font-family:sans-serif;'><h2>Thank You!</h2><p>You have already submitted this survey.</p></div>")
@@ -148,6 +159,57 @@ async def submit_survey_page(
         raise HTTPException(status_code=400, detail=str(e))
 
 
+@router.get("/survey/{token}/unsubscribe", response_class=HTMLResponse)
+async def get_unsubscribe_page(token: str, db: Annotated[AsyncSession, Depends(get_db)]):
+    """Opt-out confirmation page for customer survey follow-ups."""
+    is_valid, srv_id, ten_id = verify_survey_token(token)
+    if not is_valid:
+        return HTMLResponse("<h2>Invalid or expired unsubscribe link.</h2>", status_code=404)
+
+    token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
+    stmt = select(Survey).where(Survey.token_hash == token_hash, Survey.id == srv_id, Survey.tenant_id == ten_id)
+    survey = (await db.execute(stmt)).scalar_one_or_none()
+    if not survey:
+        return HTMLResponse("<h2>Invalid or expired unsubscribe link.</h2>", status_code=404)
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head><title>Unsubscribe Confirmation</title></head>
+    <body style="font-family:sans-serif;background:#0f172a;color:#f8fafc;display:flex;justify-content:center;padding:40px;">
+      <div style="max-width:480px;background:#1e293b;padding:32px;border-radius:12px;text-align:center;border:1px solid #334155;">
+        <h2 style="color:#38bdf8;">Unsubscribe from Product Follow-ups</h2>
+        <p style="color:#94a3b8;font-size:14px;">Are you sure you want to opt out of diagnostic quality surveys for this product?</p>
+        <form method="POST" action="/v1/survey/{token}/unsubscribe">
+          <button type="submit" style="background:#ef4444;color:white;padding:12px 24px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;">
+            Confirm Unsubscribe
+          </button>
+        </form>
+      </div>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html)
+
+
+@router.post("/survey/{token}/unsubscribe")
+async def process_unsubscribe(token: str, db: Annotated[AsyncSession, Depends(get_db)]):
+    """Expire survey and record customer consent opt-out."""
+    is_valid, srv_id, ten_id = verify_survey_token(token)
+    if not is_valid:
+        raise HTTPException(status_code=404, detail="Invalid or expired survey token")
+
+    token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
+    stmt = select(Survey).where(Survey.token_hash == token_hash, Survey.id == srv_id, Survey.tenant_id == ten_id)
+    survey = (await db.execute(stmt)).scalar_one_or_none()
+    if not survey:
+        raise HTTPException(status_code=404, detail="Invalid survey token")
+
+    survey.status = "expired"
+    await db.commit()
+    return HTMLResponse("<div style='text-align:center;padding:50px;font-family:sans-serif;color:#38bdf8;'><h2>Unsubscribed Successfully</h2><p>You have been removed from further diagnostic inquiries. Thank you.</p></div>")
+
+
 # ── Live Demo Email Endpoints ──────────────────────────────────────────────────
 
 class TestEmailPayload(BaseModel):
@@ -157,7 +219,32 @@ class TestEmailPayload(BaseModel):
     feature_name: str = "Battery Charging & Thermal Regulation"
 
 
+class SeriousAlertPayload(BaseModel):
+    to_email: EmailStr
+    product_name: str
+    category: str = "safety"
+    severity: str = "critical"
+    urgency: str = "immediate"
+    verbatim_quote: str
+    batch_code: str | None = None
+    version_label: str | None = None
+
+
+class DigestEmailPayload(BaseModel):
+    to_email: EmailStr
+    role: str = "qa"
+    product_name: str = "All Products"
+    health_score: float = 88.5
+    active_issues: int = 3
+    lead_time_days: int = 14
+    highlights: list[dict[str, str]] = [
+        {"title": "Hinge Fatigue", "description": "Concentrated in BATCH-2024-W12. Lead-time advantage of 14 days."},
+        {"title": "Firmware Stability", "description": "98% satisfaction rating on v1.2."},
+    ]
+
+
 @router.post("/email/send-test")
+@router.post("/email/survey")
 async def send_test_email(
     payload: TestEmailPayload,
     user: Annotated[User, Depends(get_current_user)],
@@ -166,8 +253,15 @@ async def send_test_email(
     """
     Live Demo Email Dispatcher:
     Sends an actual diagnostic survey invitation to any recipient email (e.g. Judge's inbox)
-    using Resend REST API or standard SMTP, and logs to the Outbox.
+    using Resend REST API, Postmark, or standard SMTP, and logs to the Outbox.
     """
+    settings = get_settings()
+    if settings.environment == "production":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Test email sending is disabled in production environments.",
+        )
+
     ctx = {
         "customer_name": payload.customer_name,
         "product_name": payload.product_name,
@@ -186,6 +280,68 @@ async def send_test_email(
     return {
         "status": "success",
         "message": f"Email successfully dispatched to {payload.to_email}",
+        "delivery": dispatch_result,
+    }
+
+
+@router.post("/email/serious-alert")
+async def dispatch_serious_alert_email(
+    payload: SeriousAlertPayload,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Dispatch emergency safety alert to engineering/QA lead inbox."""
+    ctx = {
+        "category": payload.category,
+        "severity": payload.severity,
+        "urgency": payload.urgency,
+        "product_name": payload.product_name,
+        "verbatim_quote": payload.verbatim_quote,
+        "batch_code": payload.batch_code,
+        "version_label": payload.version_label,
+        "investigation_url": "/investigations",
+    }
+    dispatch_result = await send_mail(
+        template_name="serious_alert",
+        to_email=payload.to_email,
+        ctx=ctx,
+        tenant_id=user.tenant_id,
+        session=db,
+    )
+    return {
+        "status": "dispatched",
+        "message": f"Critical safety alert sent to {payload.to_email}",
+        "delivery": dispatch_result,
+    }
+
+
+@router.post("/email/digest")
+async def dispatch_digest_email(
+    payload: DigestEmailPayload,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Dispatch role-tailored weekly intelligence digest."""
+    ctx = {
+        "role": payload.role,
+        "product_name": payload.product_name,
+        "health_score": payload.health_score,
+        "active_issues": payload.active_issues,
+        "lead_time_days": payload.lead_time_days,
+        "highlights": payload.highlights,
+        "week_range": "Week 12",
+        "dashboard_url": "/dashboard",
+    }
+    dispatch_result = await send_mail(
+        template_name=f"digest_{payload.role}",
+        to_email=payload.to_email,
+        ctx=ctx,
+        tenant_id=user.tenant_id,
+        session=db,
+    )
+    return {
+        "status": "dispatched",
+        "message": f"Weekly {payload.role.upper()} digest sent to {payload.to_email}",
         "delivery": dispatch_result,
     }
 
@@ -229,13 +385,14 @@ async def list_email_outbox(
 @router.get("/email/outbox/{outbox_id}/preview", response_class=HTMLResponse)
 async def preview_email_html(
     outbox_id: str,
+    user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    """Serve the raw rendered HTML of any outbox email for instant live demo inspection."""
+    """Serve the raw rendered HTML of an authorized tenant outbox email."""
     from prism_core.db.models import EmailOutbox
 
     outbox_entry = await db.get(EmailOutbox, outbox_id)
-    if not outbox_entry:
+    if not outbox_entry or outbox_entry.tenant_id != user.tenant_id:
         return HTMLResponse("<h2>Email not found in outbox.</h2>", status_code=404)
 
     html_content = outbox_entry.payload.get("html_body")
