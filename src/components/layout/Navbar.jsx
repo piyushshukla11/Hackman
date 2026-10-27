@@ -1,6 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { fetchLeaderboard } from '../../services/api';
 
+const PRODUCT_CATALOG = {
+  prod_001: 'Voyage Horizon ANC',
+  prod_002: 'Voyage StreamCast Pro',
+  prod_003: 'Voyage Apex Wireless',
+  prod_004: 'Voyage UltraVision 27"',
+  'prod-001': 'Voyage Horizon ANC',
+  steam_games: 'Voyage Steam Gaming Suite',
+};
+
 export default function Navbar({
   selectedProduct,
   onSelectProduct,
@@ -12,17 +21,21 @@ export default function Navbar({
   onNavigateLanding,
 }) {
   const [products, setProducts] = useState([
-    { id: 'prod_001', name: 'Voyage Horizon ANC', health_score: 84 },
-    { id: 'prod_002', name: 'Voyage StreamCast Pro', health_score: 88 },
-    { id: 'prod_003', name: 'Voyage Apex Wireless', health_score: 86 },
-    { id: 'prod_004', name: 'Voyage UltraVision 27"', health_score: 82 },
+    { id: 'prod_001', name: 'Voyage Horizon ANC', health_score: 89 },
+    { id: 'prod_002', name: 'Voyage StreamCast Pro', health_score: 87 },
+    { id: 'prod_004', name: 'Voyage UltraVision 27"', health_score: 86 },
+    { id: 'prod_003', name: 'Voyage Apex Wireless', health_score: 85 },
   ]);
 
   useEffect(() => {
     let isMounted = true;
     fetchLeaderboard().then((res) => {
       if (isMounted && Array.isArray(res) && res.length > 0) {
-        setProducts(res.map((p) => ({ id: p.product_id, name: p.name || p.product_id, health_score: p.health_score })));
+        setProducts(res.map((p) => ({
+          id: p.product_id,
+          name: PRODUCT_CATALOG[p.product_id] || p.name || p.product_id,
+          health_score: p.health_score,
+        })));
       }
     });
     return () => { isMounted = false; };
@@ -40,7 +53,7 @@ export default function Navbar({
       name: 'Amazon India',
       url: '/simulation/amazon.html',
       badge: 'Marketplace',
-      color: 'text-amber-300 bg-amber-500/10 border-amber-500/20',
+      color: 'text-zinc-200 bg-zinc-800 border-zinc-700',
       desc: 'Simulate Amazon electronics storefront & user reviews',
     },
     {
@@ -48,7 +61,7 @@ export default function Navbar({
       name: 'Flipkart',
       url: '/simulation/flipkart.html',
       badge: 'Marketplace',
-      color: 'text-sky-300 bg-sky-500/10 border-sky-500/20',
+      color: 'text-zinc-200 bg-zinc-800 border-zinc-700',
       desc: 'Flipkart product page with verified buyer reviews',
     },
     {
@@ -56,7 +69,7 @@ export default function Navbar({
       name: 'JioMart',
       url: '/simulation/jiomart.html',
       badge: 'Retail',
-      color: 'text-rose-300 bg-rose-500/10 border-rose-500/20',
+      color: 'text-zinc-200 bg-zinc-800 border-zinc-700',
       desc: 'JioMart catalog reviews & delivery ratings',
     },
     {
@@ -64,7 +77,7 @@ export default function Navbar({
       name: 'Brand Direct Store',
       url: '/simulation/brand.html',
       badge: 'Direct (D2C)',
-      color: 'text-teal-300 bg-teal-500/10 border-teal-500/20',
+      color: 'text-zinc-200 bg-zinc-800 border-zinc-700',
       desc: 'Official direct-to-consumer store & warranty feedback',
     },
     {
@@ -72,7 +85,7 @@ export default function Navbar({
       name: 'Live Dashboard Simulation',
       url: '/simulation/dashboard-charts.html',
       badge: 'Diagnostics',
-      color: 'text-purple-300 bg-purple-500/10 border-purple-500/20',
+      color: 'text-zinc-200 bg-zinc-800 border-zinc-700',
       desc: 'Simulation chart telemetry and socket events',
     },
   ];
@@ -92,7 +105,7 @@ export default function Navbar({
   }, []);
 
   return (
-    <header className="h-16 border-b border-zinc-800 bg-[#18191f] px-5 flex items-center justify-between sticky top-0 z-40 select-none">
+    <header className="h-16 border-b border-zinc-800/80 bg-[#0b0c10] px-5 flex items-center justify-between sticky top-0 z-40 select-none">
       {/* Brand & Product Selector */}
       <div className="flex items-center gap-4">
         {/* PRISM Brand */}
@@ -114,7 +127,7 @@ export default function Navbar({
           <select
             value={selectedProduct}
             onChange={(e) => onSelectProduct(e.target.value)}
-            className="bg-[#22242d] border border-zinc-700/60 text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-400 transition-colors font-medium cursor-pointer"
+            className="bg-[#15161c] border border-zinc-700 text-xs text-white rounded-lg px-3 py-1.5 focus:outline-none focus:border-white transition-colors font-semibold cursor-pointer shadow-sm"
           >
             {products.map((prod) => (
               <option key={prod.id} value={prod.id}>
@@ -125,29 +138,23 @@ export default function Navbar({
         </div>
       </div>
 
-      {/* Trust & Quarantine Audit Metric */}
-      <div className="hidden xl:flex items-center gap-3.5 px-3.5 py-1 rounded-full bg-[#22242d] border border-zinc-700/60 text-xs">
+      {/* Clean Telemetry Feed Pill */}
+      <div className="hidden xl:flex items-center gap-3 px-3.5 py-1 rounded-full bg-[#15161c] border border-zinc-800 text-xs">
         <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-zinc-300" />
-          <span className="text-zinc-400">Product:</span>
-          <span className="font-mono font-medium text-white">{currentProduct?.id}</span>
-        </div>
-        <div className="text-zinc-700">|</div>
-        <div className="flex items-center gap-2">
-          <span className="text-zinc-400">Health Score:</span>
-          <span className="font-mono font-medium text-zinc-200">{currentProduct?.health_score || 50} / 100</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+          <span className="text-zinc-300 font-medium">Live Telemetry Feed</span>
         </div>
         <div className="text-zinc-700">|</div>
         <button
           onClick={onToggleQuarantined}
           title="Toggle between clean audited reviews and quarantined reviews"
-          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide transition-all ${
+          className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide transition-all ${
             includeQuarantined
-              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-              : 'bg-white/5 text-zinc-300 hover:text-white border border-white/10'
+              ? 'bg-amber-500/20 text-amber-200 border border-amber-500/40'
+              : 'bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700'
           }`}
         >
-          {includeQuarantined ? 'Quarantined Included' : 'Clean Only (Audited)'}
+          {includeQuarantined ? 'Quarantined Included' : 'Clean Audited Only'}
         </button>
       </div>
 

@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="en" class="responsive DesktopUI">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171a21">
+  <title>Cyberpunk 2077 on Steam</title>
+  <meta name="description" content="Buy and review popular games on Steam. Customer reviews are streamed directly into the PRISM customer intelligence pipeline.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ======================================================
+       STEAM COLOR PALETTE & DESIGN SYSTEM
+       ====================================================== */
+    :root {
+      --steam-bg:          #1b2838;
+      --steam-bg-dark:     #0f1722;
+      --steam-header-bg:   #171a21;
+      --steam-text-main:   #c6d4df;
+      --steam-text-muted:  #8f98a0;
+      --steam-blue-accent: #66c0f4;
+      --steam-blue-deep:   #1999ff;
+      --steam-card-bg:     #16202d;
+      --steam-subnav-bg:   linear-gradient(90deg, rgba(24,37,54,0.96) 0%, rgba(14,23,34,0.96) 100%);
+      --steam-green-btn:   linear-gradient(to right, #75b022 5%, #588a1b 95%);
+      --steam-green-hover: linear-gradient(to right, #8ed629 5%, #6aa621 95%);
+      --steam-discount-bg: #4c6b22;
+      --steam-discount-tx: #a4d007;
+      --steam-border:      rgba(255, 255, 255, 0.08);
+      --steam-red:         #eb5757;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--steam-bg);
+      background-image: radial-gradient(circle at top right, #243b53 0%, #1b2838 45%, #0d131a 100%);
+      background-attachment: fixed;
+      color: var(--steam-text-main);
+      font-family: 'Nunito', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      min-width: 320px;
+      overflow-x: hidden;
+    }
+
+    a { color: var(--steam-blue-accent); text-decoration: none; }
+    a:hover { color: #ffffff; text-decoration: underline; }
+
+    /* ======================================================
+       STEAM GLOBAL HEADER
+       ====================================================== */
+    #global_header {
+      background: var(--steam-header-bg);
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(0,0,0,0.4);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+    .global-header-inner {
+      max-width: 1180px;
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    /* Logo */
+    .steam-logo-holder {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    .steam-logo-icon {
+      width: 36px;
+      height: 36px;
+      fill: #c6d4df;
+      transition: fill 0.2s;
+    }
+    .steam-logo-holder:hover .steam-logo-icon { fill: #ffffff; }
+    .steam-wordmark {
+      font-size: 21px;
+      font-weight: 900;
+      letter-spacing: 2.5px;
+      color: #ffffff;
+      text-transform: uppercase;
+      font-style: italic;
+    }
+
+    /* Top Supernav */
+    .supernav-container {
+      display: flex;
+      align-items: stretch;
+      height: 100%;
+      gap: 4px;
+    }
+    .supernav-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .supernav-item > a {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 14px;
+      color: #b8b6b4;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 3px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .supernav-item > a:hover {
+      color: #ffffff;
+      text-decoration: none;
+    }
+    .supernav-item.active > a {
+      color: #1a9fff;
+      border-bottom-color: #1a9fff;
+    }
+
+    /* Dropdown Menus */
+    .supernav-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #171a21;
+      min-width: 190px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 6px 0;
+      z-index: 1001;
+    }
+    .supernav-item:hover .supernav-dropdown { display: block; }
+    .supernav-dropdown a {
+      display: block;
+      padding: 8px 16px;
+      color: #c6d4df;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: none;
+    }
+    .supernav-dropdown a:hover {
+      background: #212c3d;
+      color: #66c0f4;
+      text-decoration: none;
+    }
+
+    /* Header Right Tools */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-install-steam {
+      background: #5c7e10;
+      background: linear-gradient(to bottom, #799905 5%, #536f04 95%);
+      color: #e5f2cf;
+      padding: 6px 12px;
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      border: none;
+      text-decoration: none !important;
+      transition: filter 0.15s;
+    }
+    .btn-install-steam:hover { filter: brightness(1.15); color: #fff; }
+    .btn-live-stream {
+      background: rgba(102,192,244,0.15);
+      border: 1px solid rgba(102,192,244,0.3);
+      color: #66c0f4;
+      padding: 5px 10px;
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: 700;
+      text-decoration: none !important;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn-live-stream:hover { background: rgba(102,192,244,0.25); color: #fff; }
+    .header-signin-btn {
+      color: #b8b6b4;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 6px;
+    }
+    .header-signin-btn:hover { color: #fff; text-decoration: none; }
+
+    /* ======================================================
+       STORE SUBNAV BAR
+       ====================================================== */
+    #store_subnav {
+      background: var(--steam-subnav-bg);
+      border-bottom: 1px solid rgba(102, 192, 244, 0.2);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .store-subnav-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 38px;
+    }
+    .store-subnav-links {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .store-subnav-links a {
+      color: #d0e4f2;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      height: 38px;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .store-subnav-links a:hover, .store-subnav-links a.active {
+      color: #ffffff;
+      border-bottom-color: var(--steam-blue-accent);
+    }
+    .store-search-box {
+      display: flex;
+      align-items: center;
+      background: #316282;
+      border-radius: 3px;
+      padding: 2px 8px;
+    }
+    .store-search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 12px;
+      width: 180px;
+      font-family: inherit;
+    }
+    .store-search-box input::placeholder { color: #82a8c2; }
+    .store-search-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #16202d;
+      font-size: 13px;
+      padding: 2px;
+      display: flex;
+      align-items: center;
+    }
+    .store-search-btn:hover { color: #ffffff; }
+
+    /* ======================================================
+       MAIN CONTENT CONTAINER
+       ====================================================== */
+    .steam-container {
+      max-width: 1180px;
+      margin: 18px auto 60px;
+      padding: 0 16px;
+    }
+
+    /* Popular Games Switcher Bar */
+    .variant-switcher {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      background: rgba(0,0,0,0.3);
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.06);
+      overflow-x: auto;
+    }
+    .variant-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--steam-text-muted);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .variant-pill {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #8f98a0;
+      padding: 6px 14px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .variant-pill:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .variant-pill.active {
+      background: #2a475e;
+      border-color: var(--steam-blue-accent);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(102,192,244,0.3);
+    }
+
+    /* Breadcrumbs & Header */
+    .store-breadcrumb {
+      font-size: 12px;
+      color: #8f98a0;
+      margin-bottom: 8px;
+    }
+    .store-breadcrumb a { color: var(--steam-blue-accent); }
+    .store-breadcrumb span { color: #ffffff; }
+
+    .game-title-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .game-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+    }
+    .btn-community-hub {
+      background: rgba(103, 193, 245, 0.15);
+      border: 1px solid rgba(103, 193, 245, 0.3);
+      color: #67c1f5;
+      padding: 6px 14px;
+      border-radius: 2px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+      text-decoration: none !important;
+    }
+    .btn-community-hub:hover { background: rgba(103, 193, 245, 0.3); color: #fff; }
+
+    /* ======================================================
+       TWO-COLUMN PRODUCT SHOWCASE (Media & Details)
+       ====================================================== */
+    .steam-showcase-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 16px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 16px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 960px) {
+      .steam-showcase-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Left Column: Media Showcase */
+    .viewport-box {
+      width: 100%;
+      height: 380px;
+      background: #000;
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+    .viewport-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.25s ease;
+    }
+    .viewport-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 60px;
+      background: rgba(0,0,0,0.55);
+      border: none;
+      color: #ffffff;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s;
+      z-index: 10;
+    }
+    .viewport-arrow:hover { background: rgba(0,0,0,0.85); color: #66c0f4; }
+    .viewport-arrow.left { left: 0; border-radius: 0 3px 3px 0; }
+    .viewport-arrow.right { right: 0; border-radius: 3px 0 0 3px; }
+
+    /* Thumbnail Reel */
+    .thumbnail-reel {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .thumb-btn {
+      width: 120px;
+      height: 68px;
+      flex-shrink: 0;
+      border-radius: 2px;
+      overflow: hidden;
+      cursor: pointer;
+      opacity: 0.6;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+      background: #000;
+    }
+    .thumb-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .thumb-btn:hover, .thumb-btn.active {
+      opacity: 1;
+      border-color: var(--steam-blue-accent);
+    }
+
+    /* Right Column: Game Meta & Buy Box Summary */
+    .meta-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .meta-capsule-img {
+      width: 100%;
+      height: 155px;
+      object-fit: cover;
+      border-radius: 2px;
+      margin-bottom: 10px;
+    }
+    .meta-snippet {
+      font-size: 13px;
+      color: #acb2b8;
+      line-height: 1.55;
+      margin-bottom: 12px;
+    }
+
+    /* Review Overview Widget inside Right Column */
+    .meta-reviews-box {
+      background: rgba(0,0,0,0.3);
+      padding: 10px 12px;
+      border-radius: 2px;
+      margin-bottom: 12px;
+      border-left: 3px solid var(--steam-blue-accent);
+    }
+    .meta-field-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+    .meta-field-row:last-child { margin-bottom: 0; }
+    .meta-field-label {
+      color: #556772;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      width: 115px;
+      flex-shrink: 0;
+    }
+    .meta-field-val {
+      color: #8f98a0;
+      font-size: 12px;
+    }
+    .meta-field-val.highlight {
+      color: var(--steam-blue-accent);
+      font-weight: 700;
+    }
+    .meta-field-val a { color: var(--steam-blue-accent); }
+
+    /* Tags */
+    .meta-tags-container {
+      margin-top: 10px;
+    }
+    .meta-tags-title {
+      font-size: 11px;
+      color: #556772;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .meta-tag-pill {
+      display: inline-block;
+      background: rgba(103, 193, 245, 0.12);
+      color: #67c1f5;
+      padding: 3px 8px;
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: 600;
+      margin: 2px 3px 2px 0;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .meta-tag-pill:hover { background: rgba(103, 193, 245, 0.25); color: #fff; }
+
+    /* ======================================================
+       STEAM DECK VERIFIED RIBBON
+       ====================================================== */
+    .deck-verified-bar {
+      background: linear-gradient(90deg, #192735 0%, #121c27 100%);
+      border: 1px solid rgba(102,192,244,0.3);
+      border-radius: 4px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .deck-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .deck-badge-icon {
+      width: 36px;
+      height: 36px;
+      background: #1a9fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 18px;
+      box-shadow: 0 0 10px rgba(26,159,255,0.4);
+    }
+    .deck-text-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .deck-text-sub {
+      font-size: 12px;
+      color: #8f98a0;
+    }
+    .deck-learn-link {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--steam-blue-accent);
+      white-space: nowrap;
+    }
+
+    /* ======================================================
+       STEAM BUY BOX
+       ====================================================== */
+    .steam-buy-box {
+      background: linear-gradient(135deg, rgba(34, 58, 82, 0.85) 0%, rgba(19, 32, 45, 0.95) 100%);
+      border: 1px solid rgba(102,192,244,0.3);
+      border-radius: 4px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .buy-box-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+    .buy-box-sub {
+      font-size: 12px;
+      color: #8f98a0;
+      margin-bottom: 16px;
+    }
+    .buy-action-strip {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .discount-badge {
+      background: var(--steam-discount-bg);
+      color: var(--steam-discount-tx);
+      font-size: 22px;
+      font-weight: 900;
+      padding: 5px 10px;
+      border-radius: 2px;
+      letter-spacing: -0.5px;
+    }
+    .price-box {
+      background: #000000;
+      padding: 4px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      border-radius: 2px;
+    }
+    .price-strikethrough {
+      font-size: 11px;
+      color: #738895;
+      text-decoration: line-through;
+    }
+    .price-current {
+      font-size: 16px;
+      color: #c6d4df;
+      font-weight: 700;
+    }
+    .btn-steam-cart {
+      background: var(--steam-green-btn);
+      color: #d2efa9;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 10px 24px;
+      border-radius: 2px;
+      border: none;
+      cursor: pointer;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+      transition: all 0.15s;
+    }
+    .btn-steam-cart:hover {
+      background: var(--steam-green-hover);
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(142,214,41,0.4);
+    }
+
+    /* ======================================================
+       SYSTEM REQUIREMENTS & SPECS
+       ====================================================== */
+    .game-specs-box {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 4px;
+      padding: 22px 24px;
+      margin-bottom: 24px;
+    }
+    .game-specs-box h2 {
+      font-size: 15px;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    .game-specs-box p {
+      color: #acb2b8;
+      font-size: 13px;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .spec-card {
+      background: rgba(42, 71, 94, 0.3);
+      border: 1px solid rgba(103,193,245,0.15);
+      border-radius: 3px;
+      padding: 12px 14px;
+    }
+    .spec-card-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--steam-text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .spec-card-val {
+      font-size: 13px;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    /* ======================================================
+       CUSTOMER REVIEWS SECTION
+       ====================================================== */
+    .steam-reviews-box {
+      background: rgba(0,0,0,0.25);
+      border-radius: 4px;
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .reviews-headline-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .reviews-headline-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .prism-pipeline-badge {
+      background: rgba(102,192,244,0.12);
+      border: 1px solid rgba(102,192,244,0.3);
+      color: #66c0f4;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .prism-pipeline-badge::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background: #66c0f4;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #66c0f4;
+      animation: pulseDot 2s infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.75); }
+    }
+
+    /* Sentiment Summary Breakdown Widget */
+    .reviews-summary-breakdown {
+      display: flex;
+      gap: 24px;
+      background: rgba(0,0,0,0.35);
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    @media (max-width: 640px) {
+      .reviews-summary-breakdown { flex-direction: column; }
+    }
+    .summary-left-score {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 140px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      padding-right: 20px;
+    }
+    .summary-verdict-text {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--steam-blue-accent);
+    }
+    .summary-percentage {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--steam-discount-tx);
+    }
+    .summary-count-label {
+      font-size: 11px;
+      color: var(--steam-text-muted);
+    }
+    .summary-bars-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+    }
+    .sentiment-bar-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sentiment-bar-label {
+      font-size: 11px;
+      color: var(--steam-text-muted);
+      font-weight: 700;
+      min-width: 55px;
+    }
+    .sentiment-bar-track {
+      flex: 1;
+      height: 8px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .sentiment-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
+    .sentiment-bar-fill.pos { background: linear-gradient(to right, #4c6b22, #75b022); }
+    .sentiment-bar-fill.neu { background: linear-gradient(to right, #394857, #5c748c); }
+    .sentiment-bar-fill.neg { background: linear-gradient(to right, #8a2525, #eb5757); }
+    .sentiment-bar-number {
+      font-size: 11px;
+      color: var(--steam-text-muted);
+      min-width: 35px;
+      text-align: right;
+    }
+
+    /* Filter Pills */
+    .reviews-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .filter-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--steam-text-muted);
+      text-transform: uppercase;
+      margin-right: 4px;
+    }
+    .review-filter-pill {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #8f9ea7;
+      padding: 4px 12px;
+      border-radius: 2px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .review-filter-pill:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .review-filter-pill.active {
+      background: #2a475e;
+      border-color: var(--steam-blue-accent);
+      color: #ffffff;
+    }
+
+    /* Write Review Form */
+    .steam-write-box {
+      background: #1b2838;
+      border: 1px solid #2a475e;
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .write-box-heading {
+      font-size: 15px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+    .write-box-caption {
+      font-size: 12px;
+      color: #8f98a0;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .steam-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    @media (max-width: 640px) { .steam-form-grid { grid-template-columns: 1fr; } }
+    .steam-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .steam-input-group label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #8f98a0;
+      text-transform: uppercase;
+    }
+    .steam-input {
+      background: #101822;
+      border: 1px solid #2a475e;
+      border-radius: 2px;
+      padding: 8px 10px;
+      color: #ffffff;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .steam-input:focus { border-color: var(--steam-blue-accent); box-shadow: 0 0 6px rgba(102,192,244,0.3); }
+    .steam-textarea {
+      width: 100%;
+      min-height: 95px;
+      resize: vertical;
+    }
+
+    .recommend-question {
+      font-size: 12px;
+      font-weight: 700;
+      color: #c6d4df;
+      margin: 12px 0 6px;
+    }
+    .thumb-toggle-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .thumb-btn-steam {
+      flex: 1;
+      padding: 10px;
+      border-radius: 3px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid #2a475e;
+      background: #121c27;
+      color: #8f98a0;
+      transition: all 0.15s;
+    }
+    .thumb-btn-steam.up.active {
+      background: rgba(102,192,244,0.22);
+      border-color: #66c0f4;
+      color: #66c0f4;
+    }
+    .thumb-btn-steam.down.active {
+      background: rgba(235,87,87,0.22);
+      border-color: #eb5757;
+      color: #eb5757;
+    }
+
+    .star-picker-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+      margin-bottom: 12px;
+    }
+    .star-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #c6d4df;
+      padding: 4px 10px;
+      border-radius: 2px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .star-btn:hover { background: rgba(255,255,255,0.12); }
+    .star-btn.active {
+      background: #2a475e;
+      border-color: #66c0f4;
+      color: #66c0f4;
+    }
+
+    .steam-submit-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .endpoint-tag {
+      font-size: 11px;
+      color: #66c0f4;
+      font-family: monospace;
+    }
+    .btn-post-review {
+      background: linear-gradient(to right, #417a9b 5%, #2a475e 95%);
+      color: #ffffff;
+      border: 1px solid #66c0f4;
+      padding: 9px 24px;
+      border-radius: 2px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .btn-post-review:hover {
+      background: linear-gradient(to right, #66c0f4 5%, #417a9b 95%);
+      color: #171a21;
+    }
+
+    .steam-status-banner {
+      display: none;
+      padding: 10px 14px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+    .steam-status-banner.success {
+      display: block;
+      background: rgba(46, 204, 113, 0.15);
+      border: 1px solid rgba(46, 204, 113, 0.4);
+      color: #2ecc71;
+    }
+    .steam-status-banner.loading {
+      display: block;
+      background: rgba(102, 192, 244, 0.15);
+      border: 1px solid rgba(102, 192, 244, 0.4);
+      color: #66c0f4;
+    }
+
+    /* Review Card */
+    .steam-review-card {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 3px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 720px) {
+      .steam-review-card { grid-template-columns: 1fr; }
+    }
+    .reviewer-col {
+      border-right: 1px solid rgba(255,255,255,0.06);
+      padding-right: 12px;
+    }
+    .reviewer-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .steam-avatar {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #2a475e, #1b2838);
+      border: 2px solid #417a9b;
+      border-radius: 3px;
+      color: #fff;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+    .reviewer-name {
+      font-weight: 700;
+      color: #c6d4df;
+      font-size: 13px;
+    }
+    .reviewer-hours {
+      font-size: 11px;
+      color: #738895;
+    }
+    .verdict-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .verdict-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(102,192,244,0.15);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #66c0f4;
+    }
+    .verdict-icon.down {
+      background: rgba(235,87,87,0.15);
+      color: #eb5757;
+    }
+    .verdict-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .post-date {
+      margin-left: auto;
+      font-size: 11px;
+      color: #556772;
+    }
+    .review-text-content {
+      color: #acb2b8;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .helpful-bar {
+      border-top: 1px solid rgba(255,255,255,0.04);
+      padding-top: 8px;
+      font-size: 11px;
+      color: #647580;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .helpful-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #c6d4df;
+      padding: 2px 8px;
+      border-radius: 2px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .helpful-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+    /* Footer */
+    #steam-footer {
+      background: var(--steam-header-bg);
+      padding: 36px 20px 48px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      color: #8f98a0;
+      font-size: 12px;
+    }
+    .footer-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
+    .footer-valve-logo {
+      font-size: 22px;
+      font-weight: 900;
+      color: #4a6378;
+      letter-spacing: 3px;
+      font-style: italic;
+    }
+    .footer-nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+    }
+    .footer-nav-links a { color: #8f98a0; font-size: 11px; }
+    .footer-nav-links a:hover { color: #fff; }
+    .footer-legal-copy {
+      font-size: 11px;
+      line-height: 1.6;
+      max-width: 800px;
+    }
+    .footer-prism-tag {
+      font-size: 11px;
+      color: rgba(102,192,244,0.6);
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================
+       STEAM GLOBAL HEADER
+       ========================================================= -->
+  <header id="global_header">
+    <div class="global-header-inner">
+      <a href="#" class="steam-logo-holder" onclick="window.location.reload(); return false;">
+        <svg class="steam-logo-icon" viewBox="0 0 24 24">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.41l3.07-4.24a4.48 4.48 0 0 1-.95-.91L6.15 19.9A11.96 11.96 0 0 1 0 12C0 5.38 5.38 0 12 0s12 5.38 12 12c0 6.62-5.38 12-12 12a11.9 11.9 0 0 1-3.79-.62l4.13-2.99c.5.14 1.03.22 1.58.22 3.31 0 6-2.69 6-6s-2.69-6-6-6-6 2.69-6 6c0 .55.08 1.08.22 1.58L3.26 14.8C3.1 13.9 3 12.96 3 12c0-4.97 4.03-9 9-9s9 4.03 9 9-4.03 9-9 9a8.96 8.96 0 0 1-2.4-.33l-2.6 3.59C9.07 23.86 10.5 24 12 24c6.63 0 12-5.37 12-12S18.63 0 12 0z"/>
+        </svg>
+        <span class="steam-wordmark">STEAM</span>
+      </a>
+
+      <nav class="supernav-container">
+        <div class="supernav-item active">
+          <a href="#">Store</a>
+          <div class="supernav-dropdown">
+            <a href="#">Featured</a>
+            <a href="#">Discovery Queue</a>
+            <a href="#">Wishlist</a>
+            <a href="#">Points Shop</a>
+            <a href="#">News</a>
+            <a href="#">Stats &amp; Top Sellers</a>
+          </div>
+        </div>
+        <div class="supernav-item">
+          <a href="#">Community</a>
+          <div class="supernav-dropdown">
+            <a href="#">Home</a>
+            <a href="#">Discussions</a>
+            <a href="#">Workshop</a>
+            <a href="#">Market</a>
+            <a href="#">Broadcasts</a>
+          </div>
+        </div>
+        <div class="supernav-item"><a href="#">About</a></div>
+        <div class="supernav-item"><a href="#">Support</a></div>
+      </nav>
+
+      <div class="header-actions">
+        <a href="http://localhost:5173" class="btn-live-stream" title="View PRISM Live Stream">
+          <span>PRISM Stream</span>
+        </a>
+        <a href="#" class="btn-install-steam">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+          Install Steam
+        </a>
+        <a href="#" class="header-signin-btn">login</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       STORE SUBNAV BAR
+       ========================================================= -->
+  <div id="store_subnav">
+    <div class="store-subnav-inner">
+      <div class="store-subnav-links">
+        <a href="#">Your Store</a>
+        <a href="#" class="active">Popular Games</a>
+        <a href="#">Top Sellers</a>
+        <a href="#">Great on Deck</a>
+        <a href="#">New Releases</a>
+        <a href="#">News</a>
+      </div>
+      <div class="store-search-box">
+        <input type="text" id="game_search_input" placeholder="search the store" value="Cyberpunk 2077">
+        <button class="store-search-btn" aria-label="Search">&#128269;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MAIN STOREFRONT VIEWPORT
+       ========================================================= -->
+  <main class="steam-container">
+
+    <!-- Popular Game Selection Pills -->
+    <div class="variant-switcher">
+      <span class="variant-label">Popular Steam Games:</span>
+      <button class="variant-pill active" onclick="switchGame('cyberpunk')">Cyberpunk 2077</button>
+      <button class="variant-pill" onclick="switchGame('eldenring')">ELDEN RING</button>
+      <button class="variant-pill" onclick="switchGame('baldursgate')">Baldur's Gate 3</button>
+      <button class="variant-pill" onclick="switchGame('wukong')">Black Myth: Wukong</button>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="store-breadcrumb">
+      <a href="#">All Games</a> &gt; <span id="bc_genre">RPG &amp; Action</span> &gt; <span id="bc_game_name">Cyberpunk 2077</span>
+    </div>
+
+    <!-- Title Row -->
+    <div class="game-title-strip">
+      <h1 class="game-title" id="game_title">Cyberpunk 2077</h1>
+      <a href="#reviews_anchor" class="btn-community-hub">Community Reviews &darr;</a>
+    </div>
+
+    <!-- Two-Column Showcase (Media Gallery & Meta Specifications) -->
+    <section class="steam-showcase-grid">
+      <!-- Media Viewport Column -->
+      <div class="media-col">
+        <div class="viewport-box">
+          <img id="main_gallery_img" src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_2f649b68d579bf87011487d29bc4ccbfdd97d34f.1920x1080.jpg" alt="Steam Game Screenshot">
+          <button class="viewport-arrow left" onclick="stepSlide(-1)">&#8249;</button>
+          <button class="viewport-arrow right" onclick="stepSlide(1)">&#8250;</button>
+        </div>
+        <div class="thumbnail-reel" id="thumb_reel">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Metadata & Steam Reviews Aggregate Column -->
+      <div class="meta-col">
+        <div>
+          <img class="meta-capsule-img" id="meta_capsule_img" src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/header.jpg" alt="Game Banner Art">
+          <p class="meta-snippet" id="game_snippet">
+            Cyberpunk 2077 is an open-world, action-adventure RPG set in the megalopolis of Night City, where you play as a cyberpunk mercenary wrapped up in a do-or-die fight for survival.
+          </p>
+
+          <div class="meta-reviews-box">
+            <div class="meta-field-row">
+              <span class="meta-field-label">Overall Reviews:</span>
+              <span class="meta-field-val highlight" id="meta_overall_val">Very Positive (86% of 734,500)</span>
+            </div>
+            <div class="meta-field-row">
+              <span class="meta-field-label">Release Date:</span>
+              <span class="meta-field-val" id="meta_release_date">10 Dec, 2020</span>
+            </div>
+            <div class="meta-field-row">
+              <span class="meta-field-label">Developer:</span>
+              <span class="meta-field-val"><a href="#" id="meta_developer">CD PROJEKT RED</a></span>
+            </div>
+            <div class="meta-field-row">
+              <span class="meta-field-label">Publisher:</span>
+              <span class="meta-field-val"><a href="#" id="meta_publisher">CD PROJEKT RED</a></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="meta-tags-container" id="tags_container">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Steam Deck Verified Ribbon -->
+    <div class="deck-verified-bar">
+      <div class="deck-badge-group">
+        <div class="deck-badge-icon">&#10003;</div>
+        <div>
+          <div class="deck-text-title" id="deck_status_title">Steam Deck Compatibility: VERIFIED</div>
+          <div class="deck-text-sub" id="deck_status_sub">Valve testing confirms this game is fully functional on Steam Deck with great performance out of the box.</div>
+        </div>
+      </div>
+      <a href="#" class="deck-learn-link">Learn More &rsaquo;</a>
+    </div>
+
+    <!-- Buy Box -->
+    <div class="steam-buy-box">
+      <div class="buy-box-title" id="buy_box_title">Buy Cyberpunk 2077</div>
+      <div class="buy-box-sub" id="buy_box_sub">Includes 2.0 update overhaul, Ray Tracing Overdrive, and REDmod official modding toolkit.</div>
+      <div class="buy-action-strip">
+        <span class="discount-badge" id="discount_tag">-40%</span>
+        <div class="price-box">
+          <span class="price-strikethrough" id="original_price_tag">₹4,999</span>
+          <span class="price-current" id="current_price_tag">₹2,999</span>
+        </div>
+        <button class="btn-steam-cart" onclick="handleBuyClick()">Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- System Requirements & Specs -->
+    <section class="game-specs-box">
+      <h2>System Requirements &amp; Technical Specs</h2>
+      <p id="long_description_text">
+        Experience cutting-edge rendering powered by Unreal Engine and custom REDengine technology. Fully optimized for high-refresh PC monitors, ultrawide displays, and portable handheld gaming on Steam Deck.
+      </p>
+
+      <div class="specs-grid" id="specs_grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- Customer Reviews Section -->
+    <section class="steam-reviews-box" id="reviews_anchor">
+      <div class="reviews-headline-row">
+        <h2 class="reviews-headline-title">Customer Reviews</h2>
+        <div class="prism-pipeline-badge">PRISM Pipeline Active &bull; Ingest Enabled</div>
+      </div>
+
+      <!-- Sentiment Summary Widget -->
+      <div class="reviews-summary-breakdown">
+        <div class="summary-left-score">
+          <div class="summary-verdict-text" id="verdict_word">Very Positive</div>
+          <div class="summary-percentage" id="verdict_pct">86%</div>
+          <div class="summary-count-label" id="verdict_count">of 734,500 reviews</div>
+        </div>
+        <div class="summary-bars-col">
+          <div class="sentiment-bar-item">
+            <span class="sentiment-bar-label">Positive</span>
+            <div class="sentiment-bar-track">
+              <div class="sentiment-bar-fill pos" id="bar_pos" style="width: 86%"></div>
+            </div>
+            <span class="sentiment-bar-number" id="num_pos">631,670</span>
+          </div>
+          <div class="sentiment-bar-item">
+            <span class="sentiment-bar-label">Neutral</span>
+            <div class="sentiment-bar-track">
+              <div class="sentiment-bar-fill neu" id="bar_neu" style="width: 5%"></div>
+            </div>
+            <span class="sentiment-bar-number" id="num_neu">36,725</span>
+          </div>
+          <div class="sentiment-bar-item">
+            <span class="sentiment-bar-label">Negative</span>
+            <div class="sentiment-bar-track">
+              <div class="sentiment-bar-fill neg" id="bar_neg" style="width: 9%"></div>
+            </div>
+            <span class="sentiment-bar-number" id="num_neg">66,105</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="reviews-filter-bar">
+        <span class="filter-label">Filter:</span>
+        <button class="review-filter-pill active" onclick="setFilter(this, 'all')">All Reviews</button>
+        <button class="review-filter-pill" onclick="setFilter(this, 'positive')">Positive</button>
+        <button class="review-filter-pill" onclick="setFilter(this, 'negative')">Negative</button>
+        <button class="review-filter-pill" onclick="setFilter(this, 'recent')">Most Recent</button>
+      </div>
+
+      <!-- Write a Review Form (PRISM Ingest Gateway) -->
+      <div class="steam-write-box">
+        <div class="write-box-heading">Write a Review for <span id="form_product_label">Cyberpunk 2077</span></div>
+        <div class="write-box-caption">
+          Share your gameplay experience with performance, combat, storyline, and graphics. Reviews are streamed directly into the PRISM intelligence pipeline (POST /api/reviews/ingest).
+        </div>
+
+        <div class="steam-form-grid">
+          <div class="steam-input-group">
+            <label for="review_persona">Steam Persona / Gamer Tag</label>
+            <input type="text" id="review_persona" class="steam-input" placeholder="e.g. DeckMaster_99" value="SteamDeckGamer">
+          </div>
+          <div class="steam-input-group">
+            <label for="review_email">Email (For Automated AI Survey Follow-up)</label>
+            <input type="email" id="review_email" class="steam-input" placeholder="gamer@example.com" value="deck.player@example.com">
+          </div>
+        </div>
+
+        <div class="recommend-question">Do you recommend this game?</div>
+        <div class="thumb-toggle-row">
+          <button type="button" class="thumb-btn-steam up active" id="btn_thumb_up" onclick="setVerdict(true)">
+            <span>&#128077;</span> Yes, Recommended (Positive)
+          </button>
+          <button type="button" class="thumb-btn-steam down" id="btn_thumb_down" onclick="setVerdict(false)">
+            <span>&#128078;</span> No, Not Recommended (Negative)
+          </button>
+        </div>
+
+        <div class="steam-input-group">
+          <label>Rating Score (1 to 5 Stars)</label>
+          <div class="star-picker-row" id="star_picker">
+            <button type="button" class="star-btn" onclick="setStar(1)">1 ★</button>
+            <button type="button" class="star-btn" onclick="setStar(2)">2 ★</button>
+            <button type="button" class="star-btn" onclick="setStar(3)">3 ★</button>
+            <button type="button" class="star-btn" onclick="setStar(4)">4 ★</button>
+            <button type="button" class="star-btn active" onclick="setStar(5)">5 ★</button>
+          </div>
+        </div>
+
+        <div class="steam-input-group">
+          <label for="review_body">Your Review Details</label>
+          <textarea id="review_body" class="steam-input steam-textarea" placeholder="Detail your experience with performance, combat balance, story, Steam Deck FPS, or visual bugs..."></textarea>
+        </div>
+
+        <div class="steam-submit-row">
+          <div class="endpoint-tag" id="endpoint_info">
+            Target: POST http://localhost:5000/api/reviews/ingest (Channel: brand)
+          </div>
+          <button type="button" class="btn-post-review" onclick="submitSteamReview()">Post Review to Steam</button>
+        </div>
+
+        <div id="status_banner" class="steam-status-banner"></div>
+      </div>
+
+      <!-- Live Streamed Customer Reviews List -->
+      <div style="margin-bottom:14px; font-size:14px; font-weight:700; color:#fff">
+        Most Helpful Reviews (<span id="reviews_count_tag">0</span>)
+      </div>
+
+      <div id="reviews_feed">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================
+       STEAM FOOTER
+       ========================================================= -->
+  <footer id="steam-footer">
+    <div class="footer-inner">
+      <div class="footer-valve-logo">VALVE</div>
+      <div class="footer-nav-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Legal</a>
+        <a href="#">Steam Subscriber Agreement</a>
+        <a href="#">Refunds</a>
+        <a href="#">Cookies</a>
+        <a href="#">Accessibility</a>
+      </div>
+      <div class="footer-legal-copy">
+        &copy; 2026 Valve Corporation. All rights reserved. All trademarks are property of their respective owners in the US and other countries.<br>
+        VAT included in all prices where applicable.
+      </div>
+      <div class="footer-prism-tag">PRISM Customer Intelligence Refraction Engine &bull; Steam Gaming Simulation Gateway</div>
+    </div>
+  </footer>
+
+  <!-- =========================================================
+       STOREFRONT SCRIPT ENGINE
+       ========================================================= -->
+  <script src="./reviews-data.js"></script>
+  <script>
+    const API_BASE = 'http://localhost:5000/api';
+
+    /* ====================================================
+       STEAM POPULAR GAMES CATALOG
+       ==================================================== */
+    const GAMES_CATALOG = {
+      'cyberpunk': {
+        id: 'app_1091500',
+        backendProductId: 'prod_003', // Maps to gamepad/controller or games pipeline
+        name: 'Cyberpunk 2077',
+        fullName: 'Cyberpunk 2077',
+        genre: 'Open World RPG & Action',
+        snippet: 'Cyberpunk 2077 is an open-world, action-adventure RPG set in the megalopolis of Night City, where you play as a cyberpunk mercenary wrapped up in a do-or-die fight for survival. Upgraded with next-gen in mind and featuring brand-new additional content.',
+        longDesc: 'Experience the definitive open-world RPG from CD PROJEKT RED. Customise your cyberware, skillset, and playstyle as you explore a vast city that reacts to your decisions. Powered by cutting-edge ray tracing overdrive, DLSS 3.5 ray reconstruction, and official REDmod toolsets.',
+        developer: 'CD PROJEKT RED',
+        publisher: 'CD PROJEKT RED',
+        releaseDate: '10 Dec, 2020',
+        deckStatus: 'VERIFIED',
+        deckDesc: "Valve's testing confirms Cyberpunk 2077 is fully functional on Steam Deck with dedicated Steam Deck graphic presets.",
+        price: 2999,
+        mrp: 4999,
+        discount: '-40%',
+        headerImg: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/header.jpg',
+        slides: [
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/ss_2f649b68d579bf87011487d29bc4ccbfdd97d34f.1920x1080.jpg',
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/900f9bda156599fcd235f08ffb64667f9baa1afe/ss_900f9bda156599fcd235f08ffb64667f9baa1afe.1920x1080.jpg',
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/f678ed77c2fe7060ac9c64e32e1472e3ec3ab7dc/ss_f678ed77c2fe7060ac9c64e32e1472e3ec3ab7dc.1920x1080.jpg',
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/0ed9487e305983d60646ba163a3d8970efb6b347/ss_0ed9487e305983d60646ba163a3d8970efb6b347.1920x1080.jpg'
+        ],
+        tags: ['Cyberpunk', 'Open World', 'RPG', 'Nudity', 'Sci-Fi', 'Story Rich'],
+        specs: [
+          { label: 'OS', val: 'Windows 10 / 11 64-bit' },
+          { label: 'Processor', val: 'Core i7-12700 / Ryzen 7 7800X3D' },
+          { label: 'Graphics', val: 'RTX 4070 Ti / RX 7900 XT' },
+          { label: 'Memory', val: '16 GB RAM' },
+          { label: 'Storage', val: '70 GB SSD Required' },
+          { label: 'Steam Deck', val: 'Verified (40 FPS Default)' }
+        ],
+        overallWord: 'Very Positive',
+        overallPct: 86,
+        totalReviews: 734500,
+        posCount: 631670,
+        neuCount: 36725,
+        negCount: 66105,
+        sampleReviews: [
+          { user: 'JohnnySilverhand_99', hours: '312.4 hrs', verdict: 'up', rating: 5, date: '14 Oct, 2026', text: 'Night City with Ray Tracing Overdrive and DLSS 3.5 is the most immersive virtual city ever crafted. The 2.0 update and Phantom Liberty completely redeemed the game.' },
+          { user: 'Netrunner_V', hours: '88.6 hrs', verdict: 'up', rating: 4, date: '11 Oct, 2026', text: 'Combat flows wonderfully with Sandevistan and mantis blades. Storyline emotional impact hits hard. Minor physics bugs still occur occasionally.' },
+          { user: 'ChoomCorpo', hours: '24.2 hrs', verdict: 'down', rating: 2, date: '04 Oct, 2026', text: 'Stutters on older 6-core CPUs during heavy combat in Dogtown. Requires high-end NVMe drive or textures take seconds to load.' }
+        ]
+      },
+      'eldenring': {
+        id: 'app_1245620',
+        backendProductId: 'prod_004', // Maps to 25" monitor / display
+        name: 'ELDEN RING',
+        fullName: 'ELDEN RING — Shadow of the Erdtree Edition',
+        genre: 'Dark Fantasy Action RPG',
+        snippet: 'Rise, Tarnished, and be guided by grace to brandish the power of the Elden Ring and become an Elden Lord in the Lands Between. A vast world where open fields and dungeons seamlessly connect.',
+        longDesc: 'The acclaimed masterpiece created by Hidetaka Miyazaki and George R. R. Martin. Explore the Lands Between, confront legendary demigods, uncover deep lore, and master hundreds of weapons, spells, and summons.',
+        developer: 'FromSoftware Inc.',
+        publisher: 'FromSoftware, Bandai Namco Entertainment',
+        releaseDate: '25 Feb, 2022',
+        deckStatus: 'VERIFIED',
+        deckDesc: "Valve's testing confirms ELDEN RING is fully functional on Steam Deck with seamless 40Hz performance.",
+        price: 3599,
+        mrp: 4999,
+        discount: '-28%',
+        headerImg: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg',
+        slides: [
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_943bf6fe62352757d9070c1d33e50b92fe8539f1.1920x1080.jpg',
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_dcdac9e4b26ac0ee5248bfd2967d764fd00cdb42.1920x1080.jpg',
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_3c41384a24d86dddd58a8f61db77f9dc0bfda8b5.1920x1080.jpg',
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/ss_e0316c76f8197405c1312d072b84331dd735d60b.1920x1080.jpg'
+        ],
+        tags: ['Souls-like', 'Dark Fantasy', 'Open World', 'RPG', 'Difficult', 'Masterpiece'],
+        specs: [
+          { label: 'OS', val: 'Windows 10 / 11 64-bit' },
+          { label: 'Processor', val: 'INTEL CORE I7-8700K / RYZEN 5 3600X' },
+          { label: 'Graphics', val: 'GTX 1070 8GB / RX VEGA 56 8GB' },
+          { label: 'Memory', val: '16 GB RAM' },
+          { label: 'Storage', val: '60 GB Available Space' },
+          { label: 'Steam Deck', val: 'Verified (Native 800p)' }
+        ],
+        overallWord: 'Very Positive',
+        overallPct: 93,
+        totalReviews: 984300,
+        posCount: 915399,
+        neuCount: 29529,
+        negCount: 39372,
+        sampleReviews: [
+          { user: 'TarnishedBlade', hours: '420.5 hrs', verdict: 'up', rating: 5, date: '18 Oct, 2026', text: 'Peak open world level design. Exploring Leyndell and the Haligtree for the first time is an unmatched gaming memory.' },
+          { user: 'MaleniaSurvivor', hours: '195.2 hrs', verdict: 'up', rating: 5, date: '12 Oct, 2026', text: 'Challenging but rewarding boss mechanics. Shadow of the Erdtree adds even more depth to an already colossal journey.' }
+        ]
+      },
+      'baldursgate': {
+        id: 'app_1086940',
+        backendProductId: 'prod_001', // Maps to earbuds / audio or general
+        name: "Baldur's Gate 3",
+        fullName: "Baldur's Gate 3 — Game of the Year Edition",
+        genre: 'Story Rich Tactical RPG',
+        snippet: 'Gather your party and return to the Forgotten Realms in a tale of fellowship and betrayal, sacrifice and survival, and the lure of absolute power. Choose from 12 classes and 11 races.',
+        longDesc: 'Winner of over 200 Game of the Year awards. Baldur’s Gate 3 offers unprecedented player freedom, rich cinematic storytelling, deep D&D 5e mechanics, and complete 4-player co-op cross-platform support.',
+        developer: 'Larian Studios',
+        publisher: 'Larian Studios',
+        releaseDate: '3 Aug, 2023',
+        deckStatus: 'VERIFIED',
+        deckDesc: "Valve's testing confirms Baldur's Gate 3 runs with full controller and split-screen co-op on Steam Deck.",
+        price: 2999,
+        mrp: 3999,
+        discount: '-25%',
+        headerImg: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/header.jpg',
+        slides: [
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_c73bc54415178c07fef85f54ee26621728c77504.1920x1080.jpg',
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_73d93bea842b93914d966622104dcb8c0f42972b.1920x1080.jpg',
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_cf936d31061b58e98e0c646aee00e6030c410cda.1920x1080.jpg',
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/ss_b6a6ee6e046426d08ceea7a4506a1b5f44181543.1920x1080.jpg'
+        ],
+        tags: ['RPG', 'Choices Matter', 'Story Rich', 'Turn-Based Combat', 'D&D', 'Co-op'],
+        specs: [
+          { label: 'OS', val: 'Windows 10 / 11 64-bit' },
+          { label: 'Processor', val: 'Intel i7 8700K / AMD r5 3600' },
+          { label: 'Graphics', val: 'RTX 2060 Super / RX 5700 XT' },
+          { label: 'Memory', val: '16 GB RAM' },
+          { label: 'Storage', val: '150 GB SSD Required' },
+          { label: 'Steam Deck', val: 'Verified (Full Controller UI)' }
+        ],
+        overallWord: 'Overwhelmingly Positive',
+        overallPct: 96,
+        totalReviews: 628400,
+        posCount: 603264,
+        neuCount: 12568,
+        negCount: 12568,
+        sampleReviews: [
+          { user: 'ShadowheartEnjoyer', hours: '280.1 hrs', verdict: 'up', rating: 5, date: '21 Oct, 2026', text: 'The depth of narrative freedom, companion voice acting, and branching storylines set a new gold standard for RPGs.' },
+          { user: 'DnD_Strategist', hours: '142.3 hrs', verdict: 'up', rating: 5, date: '15 Oct, 2026', text: 'Tactical turn-based combat gives immense satisfaction. Utilizing environment barrels, high ground, and spell combos.' }
+        ]
+      },
+      'wukong': {
+        id: 'app_2358720',
+        backendProductId: 'prod_003',
+        name: 'Black Myth: Wukong',
+        fullName: 'Black Myth: Wukong — Action RPG',
+        genre: 'Mythological Action RPG',
+        snippet: 'Black Myth: Wukong is an action RPG rooted in Chinese mythology. Set out as the Destined One to venture into the challenges and marvels ahead, to uncover the obscured truth beneath the veil of a glorious legend.',
+        longDesc: 'A visual spectacle rendered in Unreal Engine 5 with full ray tracing. Master martial arts staff combat, spell transformations, and confront dozens of ferocious mythological bosses across ancient mystical landscapes.',
+        developer: 'Game Science',
+        publisher: 'Game Science',
+        releaseDate: '20 Aug, 2024',
+        deckStatus: 'PLAYABLE',
+        deckDesc: 'Runs with FSR enabled and medium settings on Steam Deck handheld.',
+        price: 3599,
+        mrp: 3599,
+        discount: 'HOT',
+        headerImg: 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2358720/header.jpg',
+        slides: [
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2358720/ss_86c4b7462bba219a0d0b89931a35812b9f188976.1920x1080.jpg',
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2358720/ss_d9391ab31a4d15dddf7ba4949bfa44f5d9170580.1920x1080.jpg',
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2358720/ss_524a39da392ee83dde091033562bc719d46b5838.1920x1080.jpg',
+          'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2358720/ss_968bbc9caceb7d798bd0c393e1e9b4c44ed6d835.1920x1080.jpg'
+        ],
+        tags: ['Action RPG', 'Mythology', 'Souls-like', 'Martial Arts', 'Unreal Engine 5'],
+        specs: [
+          { label: 'OS', val: 'Windows 10 / 11 64-bit' },
+          { label: 'Processor', val: 'Core i7-9700 / Ryzen 5 5500' },
+          { label: 'Graphics', val: 'RTX 2060 / RX 5700 XT 6GB' },
+          { label: 'Memory', val: '16 GB RAM' },
+          { label: 'Storage', val: '130 GB SSD Required' },
+          { label: 'DirectX', val: 'Version 12' }
+        ],
+        overallWord: 'Overwhelmingly Positive',
+        overallPct: 96,
+        totalReviews: 780200,
+        posCount: 748992,
+        neuCount: 15604,
+        negCount: 15604,
+        sampleReviews: [
+          { user: 'MonkeyKingFan', hours: '110.2 hrs', verdict: 'up', rating: 5, date: '22 Oct, 2026', text: 'Visually breathtaking in Unreal Engine 5. Boss variety is astounding, staff combat transformations feel incredible.' },
+          { user: 'SoulsVeteran_24', hours: '65.4 hrs', verdict: 'up', rating: 4, date: '19 Oct, 2026', text: 'Incredible creature designs and martial arts combat. Some invisible walls during exploration in Chapter 3.' }
+        ]
+      }
+    };
+
+    let currentGameKey = 'cyberpunk';
+    let currentSlideIdx = 0;
+    let isVerdictUp = true;
+    let selectedRating = 5;
+    let currentFilter = 'all';
+    let reviewsDatabase = {};
+
+    function initStorefront() {
+      // Seed reviews database for each game
+      Object.keys(GAMES_CATALOG).forEach(key => {
+        reviewsDatabase[key] = [...GAMES_CATALOG[key].sampleReviews];
+      });
+
+      // Load 100 Steam reviews from window.REVIEWS_DATA if available
+      if (typeof window !== 'undefined' && Array.isArray(window.REVIEWS_DATA)) {
+        window.REVIEWS_DATA.forEach(r => {
+          if (r.review_text && r.review_text.includes('[Steam - ')) {
+            let matchedKey = null;
+            if (r.review_text.includes('Cyberpunk 2077')) matchedKey = 'cyberpunk';
+            else if (r.review_text.includes("Baldur's Gate 3")) matchedKey = 'baldursgate';
+            else if (r.review_text.includes('Elden Ring')) matchedKey = 'eldenring';
+            else if (r.review_text.includes('Black Myth: Wukong') || r.review_text.includes('Wukong')) matchedKey = 'wukong';
+
+            if (matchedKey && reviewsDatabase[matchedKey]) {
+              let cleanText = r.review_text;
+              let hours = '65.2 hrs';
+              let verdict = r.rating >= 4 ? 'up' : 'down';
+
+              const hoursMatch = cleanText.match(/([0-9.]+)\s*hrs\s*on\s*record\s*\(([^)]+)\)\.\s*\[Steam\s*-\s*[^\]]+\]\s*(.*)$/);
+              if (hoursMatch) {
+                hours = `${hoursMatch[1]} hrs`;
+                verdict = hoursMatch[2].toLowerCase().includes('not') ? 'down' : 'up';
+                cleanText = hoursMatch[3];
+              } else {
+                cleanText = cleanText.replace(/\[Steam\s*-\s*[^\]]+\]\s*/g, '');
+              }
+
+              reviewsDatabase[matchedKey].push({
+                user: (r.user_id || 'SteamGamer').split('@')[0],
+                hours: hours,
+                verdict: verdict,
+                rating: r.rating,
+                date: r.timestamp ? new Date(r.timestamp).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'RECENT',
+                text: cleanText
+              });
+            }
+          }
+        });
+      }
+
+      switchGame('cyberpunk');
+    }
+
+    function switchGame(key) {
+      currentGameKey = key;
+      const g = GAMES_CATALOG[key];
+      if (!g) return;
+
+      document.title = `${g.name} on Steam`;
+      document.getElementById('game_search_input').value = g.name;
+
+      // Update pills
+      document.querySelectorAll('.variant-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(key));
+      });
+
+      // Update breadcrumbs and titles
+      document.getElementById('bc_genre').textContent = g.genre;
+      document.getElementById('bc_game_name').textContent = g.name;
+      document.getElementById('game_title').textContent = g.fullName;
+      document.getElementById('game_snippet').textContent = g.snippet;
+      document.getElementById('long_description_text').textContent = g.longDesc;
+      document.getElementById('meta_release_date').textContent = g.releaseDate;
+      document.getElementById('meta_developer').textContent = g.developer;
+      document.getElementById('meta_publisher').textContent = g.publisher;
+      document.getElementById('meta_overall_val').textContent = `${g.overallWord} (${g.overallPct}% of ${g.totalReviews.toLocaleString('en-IN')})`;
+
+      // Capsule & hero gallery
+      document.getElementById('meta_capsule_img').src = g.headerImg;
+      document.getElementById('main_gallery_img').src = g.slides[0];
+
+      // Deck ribbon
+      document.getElementById('deck_status_title').textContent = `Steam Deck Compatibility: ${g.deckStatus}`;
+      document.getElementById('deck_status_sub').textContent = g.deckDesc;
+
+      // Buy box
+      document.getElementById('buy_box_title').textContent = `Buy ${g.name}`;
+      document.getElementById('buy_box_sub').textContent = `Includes base game, official updates, and full cloud saves.`;
+      document.getElementById('discount_tag').textContent = g.discount;
+      document.getElementById('original_price_tag').textContent = `₹${g.mrp.toLocaleString('en-IN')}`;
+      document.getElementById('current_price_tag').textContent = `₹${g.price.toLocaleString('en-IN')}`;
+
+      // Form label
+      document.getElementById('form_product_label').textContent = g.name;
+
+      // Tags
+      document.getElementById('tags_container').innerHTML = `
+        <div class="meta-tags-title">Popular user-defined tags:</div>
+        ${g.tags.map(t => `<span class="meta-tag-pill">${t}</span>`).join('')}
+        <span class="meta-tag-pill">+</span>
+      `;
+
+      // Thumbnails reel
+      currentSlideIdx = 0;
+      const reel = document.getElementById('thumb_reel');
+      reel.innerHTML = g.slides.map((src, i) => `
+        <div class="thumb-btn ${i === 0 ? 'active' : ''}" onclick="selectSlide(${i})">
+          <img src="${src}" alt="Thumb ${i+1}">
+        </div>
+      `).join('');
+
+      // Hardware / System Specs Grid
+      const grid = document.getElementById('specs_grid');
+      grid.innerHTML = g.specs.map(s => `
+        <div class="spec-card">
+          <div class="spec-card-label">${s.label}</div>
+          <div class="spec-card-val">${s.val}</div>
+        </div>
+      `).join('');
+
+      // Sentiment Breakdown
+      document.getElementById('verdict_word').textContent = g.overallWord;
+      document.getElementById('verdict_pct').textContent = `${g.overallPct}%`;
+      document.getElementById('verdict_count').textContent = `of ${g.totalReviews.toLocaleString('en-IN')} reviews`;
+
+      const sumTotal = g.posCount + g.neuCount + g.negCount;
+      document.getElementById('bar_pos').style.width = `${(g.posCount / sumTotal * 100).toFixed(0)}%`;
+      document.getElementById('bar_neu').style.width = `${(g.neuCount / sumTotal * 100).toFixed(0)}%`;
+      document.getElementById('bar_neg').style.width = `${(g.negCount / sumTotal * 100).toFixed(0)}%`;
+
+      document.getElementById('num_pos').textContent = g.posCount.toLocaleString('en-IN');
+      document.getElementById('num_neu').textContent = g.neuCount.toLocaleString('en-IN');
+      document.getElementById('num_neg').textContent = g.negCount.toLocaleString('en-IN');
+
+      renderReviews();
+    }
+
+    function selectSlide(idx) {
+      currentSlideIdx = idx;
+      const g = GAMES_CATALOG[currentGameKey];
+      document.getElementById('main_gallery_img').src = g.slides[idx];
+      document.querySelectorAll('.thumb-btn').forEach((b, i) => {
+        b.classList.toggle('active', i === idx);
+      });
+    }
+
+    function stepSlide(step) {
+      const g = GAMES_CATALOG[currentGameKey];
+      currentSlideIdx = (currentSlideIdx + step + g.slides.length) % g.slides.length;
+      selectSlide(currentSlideIdx);
+    }
+
+    function setVerdict(up) {
+      isVerdictUp = up;
+      document.getElementById('btn_thumb_up').classList.toggle('active', up);
+      document.getElementById('btn_thumb_down').classList.toggle('active', !up);
+      if (up && selectedRating < 4) setStar(5);
+      if (!up && selectedRating > 2) setStar(1);
+    }
+
+    function setStar(star) {
+      selectedRating = star;
+      document.querySelectorAll('.star-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', idx + 1 === star);
+      });
+    }
+
+    function setFilter(btn, filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.review-filter-pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      renderReviews();
+    }
+
+    function renderReviews() {
+      let list = reviewsDatabase[currentGameKey] || [];
+
+      if (currentFilter === 'positive') list = list.filter(r => r.verdict === 'up');
+      else if (currentFilter === 'negative') list = list.filter(r => r.verdict === 'down');
+      else if (currentFilter === 'recent') list = [...list].reverse();
+
+      document.getElementById('reviews_count_tag').textContent = list.length;
+      const container = document.getElementById('reviews_feed');
+
+      container.innerHTML = list.map(r => `
+        <article class="steam-review-card">
+          <div class="reviewer-col">
+            <div class="reviewer-profile">
+              <div class="steam-avatar">${(r.user || 'S').charAt(0).toUpperCase()}</div>
+              <div>
+                <div class="reviewer-name">${escapeHtml(r.user)}</div>
+                <div class="reviewer-hours">${r.hours || '34.2 hrs'} on record</div>
+              </div>
+            </div>
+            <div style="font-size:11px; color:#556772">Game: ${GAMES_CATALOG[currentGameKey].name}</div>
+          </div>
+          <div class="review-body-col">
+            <div class="verdict-header">
+              <div class="verdict-icon ${r.verdict === 'down' ? 'down' : ''}">
+                ${r.verdict === 'down' ? '&#128078;' : '&#128077;'}
+              </div>
+              <div class="verdict-text" style="color:${r.verdict === 'down' ? '#eb5757' : '#66c0f4'}">
+                ${r.verdict === 'down' ? 'Not Recommended' : 'Recommended'} (${r.rating}/5 Stars)
+              </div>
+              <div class="post-date">POSTED: ${r.date || 'RECENT'}</div>
+            </div>
+            <div class="review-text-content">${escapeHtml(r.text)}</div>
+            <div class="helpful-bar">
+              <span>Was this review helpful?</span>
+              <button class="helpful-btn" onclick="alert('Helpful rating saved!')">Yes</button>
+              <button class="helpful-btn" onclick="alert('Helpful rating saved!')">No</button>
+              <button class="helpful-btn" onclick="alert('Marked as funny!')">Funny</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    async function submitSteamReview() {
+      const user = document.getElementById('review_persona').value.trim();
+      const email = document.getElementById('review_email').value.trim();
+      const text = document.getElementById('review_body').value.trim();
+      const banner = document.getElementById('status_banner');
+      const g = GAMES_CATALOG[currentGameKey];
+
+      if (!user) { alert('Please enter your Steam Persona / Gamer Handle.'); return; }
+      if (!email) { alert('Please enter your email.'); return; }
+      if (!text) { alert('Please enter review details.'); return; }
+
+      banner.className = 'steam-status-banner loading';
+      banner.textContent = 'Transmitting envelope to PRISM ingestion gateway (POST /api/reviews/ingest)...';
+
+      const newReview = {
+        user,
+        hours: `${(Math.random() * 80 + 15).toFixed(1)} hrs`,
+        verdict: isVerdictUp ? 'up' : 'down',
+        rating: selectedRating,
+        date: 'JUST NOW',
+        text
+      };
+
+      if (!reviewsDatabase[currentGameKey]) reviewsDatabase[currentGameKey] = [];
+      reviewsDatabase[currentGameKey].unshift(newReview);
+      renderReviews();
+
+      document.getElementById('review_body').value = '';
+
+      try {
+        const res = await fetch(`${API_BASE}/reviews/ingest`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            product_id: g.backendProductId, // Maps to backend product stream
+            platform: 'brand',
+            review_text: `[Steam - ${g.name}] ${text}`,
+            rating: selectedRating,
+            user_id: user,
+            email,
+            media_type: 'none',
+            timestamp: new Date().toISOString()
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          banner.className = 'steam-status-banner success';
+          banner.textContent = `Review for ${g.name} ingested into PRISM! Review ID: ${data.review_id}. Processing in real-time.`;
+        } else {
+          banner.className = 'steam-status-banner success';
+          banner.textContent = `Review saved locally (Status ${res.status}).`;
+        }
+      } catch (err) {
+        banner.className = 'steam-status-banner success';
+        banner.textContent = `Review saved to local Steam storefront cache.`;
+      }
+
+      setTimeout(() => { banner.style.display = 'none'; }, 5000);
+    }
+
+    function handleBuyClick() {
+      document.getElementById('reviews_anchor').scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => {
+        document.getElementById('review_body').focus();
+      }, 600);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, s => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[s]));
+    }
+
+    initStorefront();
+  </script>
+</body>
+</html>

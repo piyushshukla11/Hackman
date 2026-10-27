@@ -15,10 +15,18 @@ export default function ProductsPage({ selectedProduct, onSelectProduct }) {
       try {
         const board = await fetchLeaderboard();
         if (isMounted && Array.isArray(board) && board.length > 0) {
+          const CATALOG = {
+            prod_001: 'Voyage Horizon ANC',
+            prod_002: 'Voyage StreamCast Pro',
+            prod_003: 'Voyage Apex Wireless',
+            prod_004: 'Voyage UltraVision 27"',
+            'prod-001': 'Voyage Horizon ANC',
+            steam_games: 'Voyage Steam Gaming Suite',
+          };
           const mapped = board.map((item) => ({
             id: item.product_id,
-            name: item.name || item.product_id,
-            category: 'Consumer Electronics',
+            name: CATALOG[item.product_id] || item.name || item.product_id,
+            category: item.product_id === 'prod_004' ? 'Gaming Monitors' : item.product_id === 'prod_001' ? 'Headphones' : item.product_id === 'prod_002' ? 'Microphones' : 'Electronics',
             sku: item.product_id,
             activeVersion: 'v1.0',
             healthScore: item.health_score,

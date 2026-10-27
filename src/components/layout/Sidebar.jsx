@@ -120,14 +120,14 @@ export default function Sidebar({ activeTab, onSelectTab, allowedTabs = [] }) {
     : ALL_NAV_ITEMS;
 
   return (
-    <aside className="w-56 border-r border-zinc-800 bg-[#18191f] flex flex-col justify-between py-4 shrink-0 overflow-y-auto select-none">
+    <aside className="w-56 border-r border-zinc-800/80 bg-[#0b0c10] flex flex-col justify-between py-4 shrink-0 overflow-y-auto select-none">
       {/* Navigation List */}
       <div className="space-y-1 px-3 w-full">
         <div className="flex items-center justify-between px-3 py-1 mb-1">
           <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400 font-mono">
             Navigation
           </span>
-          <span className="text-[10px] font-mono text-zinc-200 bg-zinc-800/90 px-1.5 py-0.2 rounded border border-zinc-700">
+          <span className="text-[10px] font-mono text-zinc-300 bg-zinc-800/90 px-1.5 py-0.2 rounded border border-zinc-700">
             {navItems.length}
           </span>
         </div>
@@ -141,8 +141,8 @@ export default function Sidebar({ activeTab, onSelectTab, allowedTabs = [] }) {
               onClick={() => onSelectTab(item.id)}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-all text-left cursor-pointer ${
                 isActive
-                  ? 'bg-white text-zinc-950 font-semibold shadow-sm'
-                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
+                  ? 'bg-white text-zinc-950 font-bold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
               }`}
             >
               <span className={isActive ? 'text-zinc-950' : 'text-zinc-400'}>
@@ -154,9 +154,9 @@ export default function Sidebar({ activeTab, onSelectTab, allowedTabs = [] }) {
         })}
       </div>
 
-      {/* Role Protection Notice */}
-      <div className="px-3 pt-3 border-t border-zinc-800">
-        <div className="p-2.5 rounded-lg bg-[#14151a] border border-zinc-800/80 text-[10px] text-zinc-400">
+      {/* Role Notice */}
+      <div className="px-3 pt-3 border-t border-zinc-800/80">
+        <div className="p-2.5 rounded-lg bg-[#14151b] border border-zinc-800 text-[10px] text-zinc-400">
           <span className="font-semibold text-zinc-300 block mb-0.5">Role Filter Active</span>
           Views curated for authenticated employee ID.
         </div>
