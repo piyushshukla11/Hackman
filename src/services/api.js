@@ -158,3 +158,20 @@ export async function checkBackendHealth() {
   }
   return { status: 'offline' };
 }
+
+/**
+ * Fetch 6-7 RAG diagnostic survey questions and memory processing trace
+ */
+export async function fetchSurveyPreview(productId = 'prod_001') {
+  try {
+    const res = await fetch(`${API_BASE}/survey/preview/${productId}`, {
+      credentials: 'include',
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn(`[API] Could not fetch survey preview for ${productId}:`, err);
+  }
+  return null;
+}

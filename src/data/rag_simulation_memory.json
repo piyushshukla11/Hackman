@@ -1,0 +1,254 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-10-27T06:55:00Z",
+  "total_records_indexed": 500,
+  "platforms": ["amazon", "flipkart", "jiomart", "brand", "steam"],
+  "products": [
+    { "id": "prod_001", "name": "Voyage Horizon ANC", "category": "Headphones" },
+    { "id": "prod_002", "name": "Voyage StreamCast Pro", "category": "Microphones" },
+    { "id": "prod_003", "name": "Voyage Apex Wireless", "category": "Gaming Mouse" },
+    { "id": "prod_004", "name": "Voyage UltraVision 27\"", "category": "Gaming Monitors" },
+    { "id": "steam_games", "name": "Voyage Steam Gaming Suite", "category": "PC Video Games" }
+  ],
+  "rag_memory_chunks": [
+    {
+      "chunk_id": "SPEC-001-HEADPHONES",
+      "type": "technical_spec",
+      "product_id": "prod_001",
+      "product_name": "Voyage Horizon ANC",
+      "category": "Headphones",
+      "tags": ["audio", "anc", "bluetooth", "battery", "hardware_specs"],
+      "content": "Product: Voyage Horizon ANC (prod_001). Architecture: 40mm custom beryllium dynamic drivers, frequency response 15Hz-40kHz. Active Noise Cancellation: 45dB hybrid ANC utilizing 4 feedback/feedforward MEMS microphones. Connectivity: Bluetooth 5.4 with LDAC, AAC, SBC codec support; multipoint dual-device pairing; 3.5mm passive aux port. Battery: 800mAh Li-Po battery providing 50 hours playback (ANC Off) / 38 hours (ANC On); 10-minute USB-C fast charge delivers 6 hours. Ergonomics: Protein leather with slow-recovery memory foam ear cushions, stainless steel reinforced headband slider with 280g total mass. Clamping force calibrated at 4.2 Newtons.",
+      "metadata": {
+        "mrp": 9999,
+        "selling_price": 5999,
+        "batch_series": ["BATCH-2024-W12", "BATCH-2024-W14", "BATCH-2024-W18"],
+        "firmware_version": "v1.4.2"
+      }
+    },
+    {
+      "chunk_id": "SPEC-002-MIC",
+      "type": "technical_spec",
+      "product_id": "prod_002",
+      "product_name": "Voyage StreamCast Pro",
+      "category": "Microphones",
+      "tags": ["microphone", "condenser", "streaming", "usb_c", "hardware_specs"],
+      "content": "Product: Voyage StreamCast Pro (prod_002). Architecture: Dual 14mm electret condenser capsules with selectable polar patterns: Cardioid (single-source streaming/voiceover) and Omnidirectional (multi-person conference/interview). Sampling: 192kHz / 24-bit studio resolution. Acoustic Performance: 20Hz-20kHz response, max SPL 120dB, SNR 78dB. Hardware controls: Capacitive zero-noise tap-to-mute button on top with red/green LED status indicator; front-mounted infinite rotary analog gain knob; 3.5mm zero-latency headphone monitoring jack (32 ohm impedance). Construction: Zinc die-cast weighted desktop base (410g), integrated silicone vibration dampener, internal dual-layer mesh pop filter. 5/8-inch and 3/8-inch boom arm threading.",
+      "metadata": {
+        "mrp": 7999,
+        "selling_price": 4499,
+        "batch_series": ["BATCH-2024-W10", "BATCH-2024-W15"],
+        "firmware_version": "v2.1.0"
+      }
+    },
+    {
+      "chunk_id": "SPEC-003-MOUSE",
+      "type": "technical_spec",
+      "product_id": "prod_003",
+      "product_name": "Voyage Apex Wireless",
+      "category": "Gaming Mouse",
+      "tags": ["esports", "sensor", "optical_switch", "wireless", "hardware_specs"],
+      "content": "Product: Voyage Apex Wireless (prod_003). Architecture: Ultralight 58-gram solid-shell symmetrical esports gaming mouse (no honeycomb holes). Sensor: PixArt PAW3395 optical sensor, 26,000 native DPI, 650 IPS tracking speed, 50G acceleration, selectable lift-off distance (1mm / 2mm). Switches: Kailh optical micro-switches rated for 90 million clicks, eliminating debounce delay and double-click degradation. Polling Rates: 125Hz, 500Hz, 1000Hz (2.4GHz RF dongle with Nordic nRF52840 SoC, <1ms latency). Feet: 100% virgin-grade PTFE rounded skate pads (0.8mm thickness). Battery: 300mAh high-density cell providing 90 hours continuous motion at 1000Hz. Type-C flexible paracord cable included.",
+      "metadata": {
+        "mrp": 5999,
+        "selling_price": 3499,
+        "batch_series": ["BATCH-2024-W11", "BATCH-2024-W16"],
+        "firmware_version": "v1.0.8"
+      }
+    },
+    {
+      "chunk_id": "SPEC-004-MONITOR",
+      "type": "technical_spec",
+      "product_id": "prod_004",
+      "product_name": "Voyage UltraVision 27\"",
+      "category": "Gaming Monitors",
+      "tags": ["display", "ips", "165hz", "qhd", "hdr", "hardware_specs"],
+      "content": "Product: Voyage UltraVision 27\" (prod_004). Architecture: 27-inch 16:9 QHD (2560x1440) Fast-IPS panel from AUO. Refresh Rate: 165Hz native (via DisplayPort 1.4) / 144Hz (via HDMI 2.0). Response Time: 1ms GtG with three-stage panel overdrive. Color Accuracy: 99% sRGB, 95% DCI-P3 coverage, 10-bit color depth (8-bit + FRC), VESA DisplayHDR 400 certified (400 nits peak brightness). Variable Refresh: AMD FreeSync Premium certified, NVIDIA G-Sync compatible across 48Hz-165Hz VRR range. Connectivity: 1x DisplayPort 1.4, 2x HDMI 2.0, 1x USB-C with 65W USB Power Delivery & DP Alt-Mode, 2x USB 3.0 downstream hub, 3.5mm audio out. Ergonomic Stand: 130mm height adjustment, 90-degree pivot, 30-degree swivel, -5 to +20 degree tilt.",
+      "metadata": {
+        "mrp": 28999,
+        "selling_price": 18999,
+        "batch_series": ["BATCH-2024-W08", "BATCH-2024-W13", "BATCH-2024-W17"],
+        "firmware_version": "v1.12.4"
+      }
+    },
+    {
+      "chunk_id": "SPEC-005-STEAM",
+      "type": "technical_spec",
+      "product_id": "steam_games",
+      "product_name": "Voyage Steam Gaming Portfolio",
+      "category": "PC Video Games",
+      "tags": ["steam", "pc_gaming", "directx12", "vulkan", "shader_compilation"],
+      "content": "Platform Suite: Steam Gaming Portfolio. Titles: Baldur's Gate 3 (Larian Studios, Divinity 4.0 Engine, Vulkan/DX11), Black Myth: Wukong (Game Science, Unreal Engine 5.4, Nanite/Lumen, DX12), Cyberpunk 2077: Phantom Liberty (CD PROJEKT RED, REDengine 4, Full Ray Tracing / Path Tracing, DLSS 3.5/FSR 3), Elden Ring (FromSoftware, Proprietary DX12 Engine, 60fps frame-lock). PC Hardware Profiling: Baseline DX12 rendering pipeline, shader compilation execution triggers on first launch, high CPU draw calls in dense open-world hubs (Act 3 Baldur's Gate, Night City Center), VRAM allocation thresholds at 8GB vs 12GB+ on 1440p high presets.",
+      "metadata": {
+        "platform": "steam",
+        "average_playtime_hours": 142.5,
+        "supported_apis": ["DirectX 12", "Vulkan", "DirectX 11"]
+      }
+    },
+    {
+      "chunk_id": "CLUSTER-001-BT-STUTTER",
+      "type": "defect_cluster",
+      "product_id": "prod_001",
+      "product_name": "Voyage Horizon ANC",
+      "category": "Headphones",
+      "tags": ["defect", "bluetooth", "rf_interference", "microwave", "stutter", "root_cause"],
+      "content": "Defect Cluster: Bluetooth 2.4GHz RF Packet Drop & Multipoint Stutter. Root Cause Analysis: Hardware RF antenna in BATCH-2024-W12 has lower gain margin when handling simultaneous LDAC 990kbps high-bitrate streaming alongside dual-device multipoint handshakes in environments with 2.4GHz microwave leakage or high-density Wi-Fi 6 channel saturation. Symptom in Reviews: Audio momentarily drops or clicks for 0.5-1.5 seconds when moving past kitchen appliances or entering crowded office corridors. Firmware Mitigations: Firmware v1.4.3 dynamically downshifts LDAC bitrate to 660kbps adaptive mode when packet retries exceed 15% threshold, preventing audio dropout.",
+      "metadata": {
+        "affected_batch": "BATCH-2024-W12",
+        "confidence_score": 0.88,
+        "defect_concentration_p_value": 0.0004,
+        "sample_size_n": 48
+      }
+    },
+    {
+      "chunk_id": "CLUSTER-002-MIC-VIBRATION",
+      "type": "defect_cluster",
+      "product_id": "prod_002",
+      "product_name": "Voyage StreamCast Pro",
+      "category": "Microphones",
+      "tags": ["defect", "microphone", "mechanical_vibration", "keyboard_thud", "boom_arm", "root_cause"],
+      "content": "Defect Cluster: Desktop Mechanical Resonance Coupling. Root Cause Analysis: The stock weighted zinc desktop stand provides 410g stability but has a 120Hz resonant frequency coupling with heavy mechanical keyboard keystrokes on hollow particle-board desks without desk pads. Low-frequency thuds propagate directly through the stand into the 14mm condenser capsules. When customers mount the microphone on an external decoupled suspension boom arm or place it on a 4mm felt desk mat, the resonant thuds drop by 22dB, restoring clear voice reproduction. Internal silicone dampening was reinforced in BATCH-2024-W15.",
+      "metadata": {
+        "affected_batch": "BATCH-2024-W10",
+        "confidence_score": 0.91,
+        "defect_concentration_p_value": 0.0001,
+        "sample_size_n": 39
+      }
+    },
+    {
+      "chunk_id": "CLUSTER-003-MOUSE-CABLE",
+      "type": "defect_cluster",
+      "product_id": "prod_003",
+      "product_name": "Voyage Apex Wireless",
+      "category": "Gaming Mouse",
+      "tags": ["defect", "mouse", "paracord", "cable_stiffness", "tactile_switch", "root_cause"],
+      "content": "Defect Cluster: Paracord Braiding Tensile Stiffness & Middle Click Force. Root Cause Analysis: The included Type-C paracord charging cable utilized 30-gauge internal copper wiring with high-friction inner nylon sleeve, creating slight drag resistance when charging during competitive gaming. Secondly, the secondary Huano tactile switch chosen for the middle scroll wheel click required 75gf actuation force compared to 55gf for main optical switches, causing users to perceive middle-click as unusually stiff during fast weapon pings. Revised cable in BATCH-2024-W16 uses ultra-pliable 34-gauge shielding.",
+      "metadata": {
+        "affected_batch": "BATCH-2024-W11",
+        "confidence_score": 0.84,
+        "defect_concentration_p_value": 0.002,
+        "sample_size_n": 32
+      }
+    },
+    {
+      "chunk_id": "CLUSTER-004-MONITOR-CORNER-GLOW",
+      "type": "defect_cluster",
+      "product_id": "prod_004",
+      "product_name": "Voyage UltraVision 27\"",
+      "category": "Gaming Monitors",
+      "tags": ["defect", "monitor", "ips_glow", "backlight_bleed", "displayport", "root_cause"],
+      "content": "Defect Cluster: Bottom-Left Bezel Pressure & IPS Corner Glow. Root Cause Analysis: Assembly jig torque on the bottom-left internal chassis screw exceeded 1.2 N-m on early production line 3, exerting mechanical pressure against the AUO IPS panel diffuser plate. This manifested as yellowish corner glow in dark rooms during bootup or dark game scenes. Unlike defective panel bleed, this glow shifted with viewing angle (classic IPS glow) but was exacerbated by bezel pressure. Torque specification was recalibrated to 0.7 N-m in BATCH-2024-W17, eliminating 85% of localized corner pressure reports.",
+      "metadata": {
+        "affected_batch": "BATCH-2024-W13",
+        "confidence_score": 0.89,
+        "defect_concentration_p_value": 0.0002,
+        "sample_size_n": 44
+      }
+    },
+    {
+      "chunk_id": "CLUSTER-005-STEAM-SHADERS",
+      "type": "defect_cluster",
+      "product_id": "steam_games",
+      "product_name": "Voyage Steam Gaming Portfolio",
+      "category": "PC Video Games",
+      "tags": ["defect", "steam", "shader_cache", "frametime_stutter", "unreal_engine", "root_cause"],
+      "content": "Defect Cluster: On-Demand Pipeline State Object (PSO) Shader Compilation Stutter. Root Cause Analysis: Modern DX12 and Unreal Engine 5 titles (Black Myth: Wukong, Cyberpunk 2077) compile graphics shaders on-demand during first traversal of new biomes or during heavy particle effects (boss fights, spell casting). When the DirectX shader cache has not fully populated, frame times spike from 8.3ms (120fps) to 65ms (15fps) for 1-2 frames. Solution: Game Science and Larian released game updates introducing comprehensive startup pre-caching routines, cutting mid-game shader stutter by 92%.",
+      "metadata": {
+        "affected_platform": "steam",
+        "confidence_score": 0.95,
+        "defect_concentration_p_value": 0.00001,
+        "sample_size_n": 65
+      }
+    },
+    {
+      "chunk_id": "VERBATIM-AMAZON-001",
+      "type": "customer_verbatim",
+      "product_id": "prod_001",
+      "product_name": "Voyage Horizon ANC",
+      "category": "Headphones",
+      "tags": ["verbatim", "amazon", "positive", "anc", "verified_purchase"],
+      "content": "Platform: Amazon India. Rating: 5.0. Review: 'Verified Purchase. The 45dB hybrid ANC on the Voyage Horizon is phenomenal. Completely silences AC hum and busy street traffic. 40mm beryllium drivers give crystal clear highs and deep punchy bass. Battery lasted me 48 hours on a single charge. Memory foam ear cushions are ultra-soft and don't press on my spectacles.'",
+      "metadata": { "platform": "amazon", "rating": 5, "verified": true, "sentiment": 0.94 }
+    },
+    {
+      "chunk_id": "VERBATIM-AMAZON-002",
+      "type": "customer_verbatim",
+      "product_id": "prod_001",
+      "product_name": "Voyage Horizon ANC",
+      "category": "Headphones",
+      "tags": ["verbatim", "amazon", "negative", "bluetooth", "stutter", "verified_purchase"],
+      "content": "Platform: Amazon India. Rating: 2.0. Review: 'Verified Purchase. ANC is effective, but Bluetooth occasionally had a brief stutter when walking past microwave ovens or when connected to both my laptop and phone simultaneously. Re-pairing helped, but Voyage should release a firmware patch for connection stability.'",
+      "metadata": { "platform": "amazon", "rating": 2, "verified": true, "sentiment": -0.62 }
+    },
+    {
+      "chunk_id": "VERBATIM-FLIPKART-001",
+      "type": "customer_verbatim",
+      "product_id": "prod_002",
+      "product_name": "Voyage StreamCast Pro",
+      "category": "Microphones",
+      "tags": ["verbatim", "flipkart", "positive", "streaming", "gain_control"],
+      "content": "Platform: Flipkart. Rating: 5.0. Review: 'Super fast Flipkart delivery! The Voyage StreamCast Pro mic is top notch for YouTube voiceovers and streaming. The tap to mute button on top is super useful with the LED indicator. Gain dial has smooth resistance. Audio is crisp 24-bit with zero background hiss. Best mic in this budget.'",
+      "metadata": { "platform": "flipkart", "rating": 5, "verified": true, "sentiment": 0.92 }
+    },
+    {
+      "chunk_id": "VERBATIM-JIOMART-001",
+      "type": "customer_verbatim",
+      "product_id": "prod_003",
+      "product_name": "Voyage Apex Wireless",
+      "category": "Gaming Mouse",
+      "tags": ["verbatim", "jiomart", "positive", "lightweight", "battery"],
+      "content": "Platform: JioMart Electronics. Rating: 5.0. Review: 'Delivered in mint condition with genuine brand warranty. The mouse is featherlight at 58g and moves like butter on my mousepad. Sensor tracking is spot on for casual CS and editing work. Battery lasted over two weeks before needing a charge.'",
+      "metadata": { "platform": "jiomart", "rating": 5, "verified": true, "sentiment": 0.88 }
+    },
+    {
+      "chunk_id": "VERBATIM-BRAND-001",
+      "type": "customer_verbatim",
+      "product_id": "prod_004",
+      "product_name": "Voyage UltraVision 27\"",
+      "category": "Gaming Monitors",
+      "tags": ["verbatim", "brand", "positive", "165hz", "ips", "usb_c"],
+      "content": "Platform: Voyage Brand Store Direct. Rating: 5.0. Review: 'Ordered direct from Voyage website. The 27-inch 165Hz QHD panel is incredible. Zero dead pixels, vibrant 99% sRGB colors, and buttery smooth 1ms response time with FreeSync on my RTX 4070. USB-C 65W charging single-cable setup with my MacBook is super clean.'",
+      "metadata": { "platform": "brand", "rating": 5, "verified": true, "sentiment": 0.95 }
+    },
+    {
+      "chunk_id": "VERBATIM-STEAM-001",
+      "type": "customer_verbatim",
+      "product_id": "steam_games",
+      "product_name": "Black Myth: Wukong",
+      "category": "PC Video Games",
+      "tags": ["verbatim", "steam", "positive", "action_rpg", "graphics", "unreal_engine_5"],
+      "content": "Platform: Steam. Rating: Recommended (5.0). Playtime: 68.4 hrs. Review: 'Black Myth: Wukong is a masterclass in Chinese mythology and combat fluidity. Unreal Engine 5 graphics with Nanite geometric detail are breathtaking. Boss design in Chapter 3 and 4 tested every ounce of reflexes. Ran at 90+ FPS on 1440p High with DLSS Balanced. Absolutely phenomenal game.'",
+      "metadata": { "platform": "steam", "rating": 5, "playtime_hours": 68.4, "sentiment": 0.96 }
+    },
+    {
+      "chunk_id": "VERBATIM-STEAM-002",
+      "type": "customer_verbatim",
+      "product_id": "steam_games",
+      "product_name": "Black Myth: Wukong",
+      "category": "PC Video Games",
+      "tags": ["verbatim", "steam", "mixed", "shader_stutter", "framerate"],
+      "content": "Platform: Steam. Rating: Recommended with Reservations (3.0). Playtime: 42.1 hrs. Review: 'Combat and bosses are 10/10, but the initial 15 minutes suffered from shader compilation micro-stutters whenever entering a new forest biome. Once shaders cached, it stabilized at 75 FPS. Game Science please add a pre-compile shader bar at launch screen.'",
+      "metadata": { "platform": "steam", "rating": 3, "playtime_hours": 42.1, "sentiment": 0.15 }
+    },
+    {
+      "chunk_id": "DIAGNOSTIC-TREE-001",
+      "type": "diagnostic_survey_template",
+      "product_id": "prod_001",
+      "product_name": "Voyage Horizon ANC",
+      "category": "Headphones",
+      "tags": ["rag_questions", "survey", "bluetooth", "failure_isolation"],
+      "content": "RAG Diagnostic Survey Loop — Horizon ANC Audio Stability. Question 1: 'When you notice momentary audio stutter on your Horizon ANC, which best describes the environment?' Options: ['A) Walking near 2.4GHz microwave ovens or kitchen appliances', 'B) Crowded office with multiple active Wi-Fi 6 access points', 'C) Stationary at desk with phone in front of me (< 1 meter)', 'D) Only when both phone and laptop are paired simultaneously (multipoint)']. Engineering Rationale: Isolates whether failure mode is baseband RF saturation, multipoint buffer starvation, or local hardware antenna decoupling.",
+      "metadata": { "questions_count": 3, "target_confidence_mover": 0.81 }
+    },
+    {
+      "chunk_id": "DIAGNOSTIC-TREE-002",
+      "type": "diagnostic_survey_template",
+      "product_id": "prod_004",
+      "product_name": "Voyage UltraVision 27\"",
+      "category": "Gaming Monitors",
+      "tags": ["rag_questions", "survey", "monitor", "ips_glow", "failure_isolation"],
+      "content": "RAG Diagnostic Survey Loop — UltraVision 27\" Corner Glow. Question 1: 'When viewing dark scenes on your monitor, does the luminance in the bottom-left corner change when you shift your eye position?' Options: ['A) Yes, glow diminishes when viewing directly perpendicular to that corner (IPS off-axis glow)', 'B) No, bright light remains constant from all angles (mechanical bezel pressure / backlight bleed)', 'C) Only visible at 100% brightness in pitch dark room', 'D) Not noticeable in ordinary daytime lighting']. Engineering Rationale: Distinguishes AUO IPS crystal birefringence angle dependency from chassis assembly screw overtightening bleed.",
+      "metadata": { "questions_count": 3, "target_confidence_mover": 0.84 }
+    }
+  ]
+}

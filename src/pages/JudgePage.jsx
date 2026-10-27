@@ -38,9 +38,9 @@ export default function JudgePage({ onNavigateTab, onNavigateIssue, onNavigateXR
     },
     {
       num: 5,
-      title: 'Closed-Loop Verification Survey: Confidence Mover',
+      title: 'Closed-Loop Verification Survey: RAG Diagnostic Engine',
       tab: 'investigations',
-      desc: 'Automated survey asks 3 consented reviewers for confirmation. Replies arrive, and confidence visibly moves from 0.68 (Monitor) to 0.84 (Act).',
+      desc: 'PRISM RAG model ingests 500 reviews across Amazon, Flipkart, JioMart, Brand, and Steam, generating 6–7 root-cause isolation questions with live telemetry processing notes.',
       actionLabel: 'View Survey Thread →',
       action: () => onNavigateTab('investigations'),
     },
